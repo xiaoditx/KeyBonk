@@ -1,13 +1,29 @@
 # 主程序
-./KeyBonk.exe: ./src/obj/main.o ./resource/resources.o
-	g++ ./src/obj/main.o ./resource/resources.o \
+./KeyBonk.exe: ./src/obj/main.o ./src/obj/global.o ./src/obj/window_manager.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o
+	g++ ./src/obj/main.o ./src/obj/global.o ./src/obj/window_manager.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o \
 	-std=c++17 -o ./KeyBonk.exe \
 	-mwindows -municode  \
 	-luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
 
 # main.o
 ./src/obj/main.o: ./src/main.cpp
-	g++ -o ./src/obj/main.o ./src/main.cpp -c -std=c++17
+	g++ -o ./src/obj/main.o ./src/main.cpp -c -std=c++17 -I./include
+
+# global.o
+./src/obj/global.o: ./src/global.cpp
+	g++ -o ./src/obj/global.o ./src/global.cpp -c -std=c++17 -I./include
+
+# window_manager.o
+./src/obj/window_manager.o: ./src/window_manager.cpp
+	g++ -o ./src/obj/window_manager.o ./src/window_manager.cpp -c -std=c++17 -I./include
+
+# keyboard_hook.o
+./src/obj/keyboard_hook.o: ./src/keyboard_hook.cpp
+	g++ -o ./src/obj/keyboard_hook.o ./src/keyboard_hook.cpp -c -std=c++17 -I./include
+
+# utils.o
+./src/obj/utils.o: ./src/utils.cpp
+	g++ -o ./src/obj/utils.o ./src/utils.cpp -c -std=c++17 -I./include
 
 # 资源文件
 ./resource/resources.o: ./resource/resources.rc
