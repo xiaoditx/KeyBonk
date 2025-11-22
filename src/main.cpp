@@ -66,7 +66,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     // 创建窗口
     hwnd = CreateWindowEx(
-        WS_EX_LAYERED | WS_EX_TOPMOST, // 支持透明，设置置顶
+        WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, // 支持透明，设置置顶，隐藏软件图标
         CLASS_NAME, // 窗口类
         L"KeyBonk主窗口", // 窗口文本
         WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, // 窗口风格
