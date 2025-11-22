@@ -8,25 +8,14 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-// #include <wmp.h>
-// #include <comdef.h>
 #include <wchar.h>
 #include <filesystem>
 #include <string>
-//using namespace Gdiplus;
-
-
-//#include <mmsystem.h>
-//#include <digitalv.h>
-
-//#pragma comment(lib, "winmm.lib")
 
 // 后期版本会放入类的内容
 ULONG_PTR g_gdiplusToken; // GDI+的token
 HWND hwnd;
 Gdiplus::Image* g_pBackgroundImage;
-// IWMPPlayer* pPlayer = NULL;
-// IWMPControls* pControls = NULL;
 
 
 // 各种向前声明
@@ -80,15 +69,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, NULL);
 	// 加载背景图片
     g_pBackgroundImage = new Gdiplus::Image(L"./resource/background.png");
-
-    // // 创建Windows Media Player实例
-    // HRESULT hr = CoCreateInstance(
-    //     CLSID_WindowsMediaPlayer, NULL, 
-    //     CLSCTX_INPROC_SERVER, IID_IWMPPlayer, 
-    //     (void**)&pPlayer
-    // );
-    // // 获取 controls 接口
-    // hr = pPlayer->get_controls(&pControls);
 
     // 安装钩子
     HHOOK KeyboardHook = NULL;
@@ -179,6 +159,6 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
                 PlaySoundW(szPath, NULL, SND_FILENAME | SND_ASYNC);
         }
     }
-    // 按照规定你需要将事件传递给下一个钩子或系统
+    // 按照规定需要将事件传递给下一个钩子或系统
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
