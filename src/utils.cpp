@@ -1,0 +1,24 @@
+// utils.cpp
+// 工具函数实现
+
+#include <filesystem>
+#include <string>
+#include "../include/utils.h"
+
+// 判断文件是否存在
+bool FileExists(const wchar_t* rawPath){
+    std::wstring_view pathView{ rawPath };
+    return std::filesystem::exists(pathView);
+}
+
+// 资源的安全释放
+template<typename T>
+void safeRelease(T** resourcePointer){
+    // 检查是否为空
+    if(*resourcePointer){
+        // 释放资源
+        (*resourcePointer)->Release();
+        // 设置为空
+        resourcePointer = NULL;
+    }
+}
