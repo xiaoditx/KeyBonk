@@ -11,6 +11,7 @@
 #include <wchar.h>
 #include <filesystem>
 #include <string>
+#include <shellapi.h>
 #include "../resource/resources.h"
 #include <winver.h>
 
@@ -18,12 +19,17 @@
 ULONG_PTR g_gdiplusToken; // GDI+的token
 HWND hwnd; // 窗口句柄
 Gdiplus::Image* g_pBackgroundImage; // 背景图片
-bool keyBonkShutdown= false; // 是否静音
+bool Mute= false; // 是否静音
+bool WindowPenetrate = false; // 窗口穿透
+NOTIFYICONDATA nid = {}; // 任务栏通知区域图标状态
+bool minimum = false;
 HINSTANCE C_hInstance;
 
 // 各种向前声明
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); // 消息处理
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam); // 钩子
+void RemoveTrayIcon();
+BOOL AddTrayIcon(HWND hWnd);
 
 // 简单功能函数
 
@@ -118,6 +124,28 @@ bool FileExists(const wchar_t* rawPath){// 接收 C 风格字符串
     return std::filesystem::exists(pathView);// 支持 std::wstring_view/wstring/const wchar_t*
 }
 
+// 设置窗口穿透
+bool SetWindowMouseTransparent(HWND hWnd, bool enable)
+{
+    if (!hWnd || !IsWindow(hWnd))
+        return false;
+    
+    LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+    
+    if (enable)
+        exStyle |= WS_EX_TRANSPARENT;
+    else
+        exStyle &= ~WS_EX_TRANSPARENT;
+    
+    SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
+    
+    // 刷新窗口
+    SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
+                SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    
+    return true;
+}
+
 // 消息处理
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
     switch (uMsg){
@@ -126,6 +154,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                 delete g_pBackgroundImage; // 释放背景图片（真的有必要吗🤔）
                 g_pBackgroundImage = NULL;
             }
+            RemoveTrayIcon();
             Gdiplus::GdiplusShutdown(g_gdiplusToken); // 关闭GDI库
             CoUninitialize(); // 关闭COM库
         	PostQuitMessage(0);
@@ -137,13 +166,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
             HMENU hMenu = LoadMenu(C_hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
             HMENU hSubMenu = GetSubMenu(hMenu, 0);
             
+            // 设置菜单项的初始选中状态
+            UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
+            UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
+            
+            CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE, 
+                        MF_BYCOMMAND | uWindowPenetrateState);
+            CheckMenuItem(hSubMenu, IDM_MUTE, 
+                        MF_BYCOMMAND | uMuteState);
+            
             POINT pt = { LOWORD(lParam), HIWORD(lParam) };
             ClientToScreen(hwnd, &pt);
             
             // 显示右键菜单
             TrackPopupMenu(hSubMenu, 
-                          TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-                          pt.x, pt.y, 0, hwnd, NULL);
+                        TPM_RIGHTBUTTON | TPM_LEFTALIGN,
+                        pt.x, pt.y, 0, hwnd, NULL);
             DestroyMenu(hMenu);
             return 0;
         }
@@ -180,12 +218,84 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
         case WM_COMMAND:
             switch (LOWORD(wParam)){
                 case IDM_WINDOW_PENETRATE:
+                    WindowPenetrate = (!WindowPenetrate);
+                    SetWindowMouseTransparent(hwnd,WindowPenetrate);
                     break;
                 case IDM_MUTE:
-                    keyBonkShutdown = true;
+                    Mute=(!Mute);
+                    break;
+                case IDM_EXIT:
+                    PostQuitMessage(0);
+                    break;
+                case IDM_MINIMUM:
+                    minimum =! minimum;
+                    if(minimum){
+                        ShowWindow(hwnd, SW_MINIMIZE);
+                    }else{
+                        ShowWindow(hwnd, SW_RESTORE);
+                    }
+                    break;
+                case IDM_SETTINGS:
+                    MessageBoxExW(
+                        NULL,L"还没有开发呢",
+                        L"嘻嘻",MB_OK|MB_ICONEXCLAMATION,0
+                    );
+                    break;
+                case IDM_ABOUT:
+                    MessageBoxExW(
+                        NULL,L"还没有开发呢",
+                        L"嘻嘻",MB_OK|MB_ICONEXCLAMATION,0
+                    ); // 消息框提示出错
                     break;
             }
             return 0;
+        case WM_CREATE:
+            {
+                AddTrayIcon(hwnd);
+            }
+            break;
+            
+        case (WM_USER + 1):
+            if (lParam == WM_RBUTTONDOWN)
+            {
+                // 显示右键菜单
+                HMENU hMenu = LoadMenu(C_hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
+                HMENU hSubMenu = GetSubMenu(hMenu, 0);
+                
+                // 设置菜单项的初始选中状态
+                UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
+                UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
+                UINT uMinimumState = minimum ? MF_CHECKED : MF_UNCHECKED;
+                
+                CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE, 
+                            MF_BYCOMMAND | uWindowPenetrateState);
+                CheckMenuItem(hSubMenu, IDM_MUTE, 
+                            MF_BYCOMMAND | uMuteState);
+                CheckMenuItem(hSubMenu, IDM_MINIMUM, 
+                            MF_BYCOMMAND | uMinimumState);
+                
+                POINT pt;
+                GetCursorPos(&pt);  // 获取当前鼠标的屏幕坐标
+                
+                // 确保窗口在前台，这样点击其他地方时会正确关闭菜单
+                SetForegroundWindow(hwnd);
+
+                // 显示右键菜单
+                TrackPopupMenu(hSubMenu, 
+                            TPM_RIGHTBUTTON | TPM_LEFTALIGN,
+                            pt.x, pt.y, 0, hwnd, NULL);
+
+                PostMessage(hwnd, WM_NULL, 0, 0);
+                
+                DestroyMenu(hMenu);
+            }
+            else if (lParam == WM_LBUTTONDBLCLK)
+            {
+                // 双击左键显示窗口
+                ShowWindow(hwnd, SW_SHOW);
+                SetForegroundWindow(hwnd);
+            }
+            break;
         default :
             return DefWindowProcW(hwnd,uMsg,wParam,lParam);
     }
@@ -197,7 +307,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode == HC_ACTION) {
         KBDLLHOOKSTRUCT* keyInfo = (KBDLLHOOKSTRUCT*)lParam;
         // 判断是否为按键按下事件
-        if (wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) {
+        if ((wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) and not Mute) {
             DWORD vkCode = keyInfo->vkCode;
             wchar_t szPath[MAX_PATH];
             swprintf_s(szPath,
@@ -210,4 +320,32 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     }
     // 按照规定需要将事件传递给下一个钩子或系统
     return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+// 添加托盘图标函数
+BOOL AddTrayIcon(HWND hWnd)
+{
+    // 从资源加载图标
+    HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MY_ICON));
+    if (!hIcon)
+        return FALSE;
+
+    nid.cbSize = sizeof(NOTIFYICONDATA);
+    nid.hWnd = hWnd;
+    nid.uID = IDI_MY_ICON;
+    nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+    nid.uCallbackMessage = (WM_USER + 1);
+    nid.hIcon = hIcon;
+    
+    // 设置提示文本
+    lstrcpy(nid.szTip, TEXT("KeyBonk"));
+    
+    return Shell_NotifyIcon(NIM_ADD, &nid);
+}
+
+
+// 删除托盘图标函数
+void RemoveTrayIcon()
+{
+    Shell_NotifyIcon(NIM_DELETE, &nid);
 }
