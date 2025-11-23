@@ -1,8 +1,36 @@
-![KeyBonk](./resource/icon.png)
+<!-- markdownlint-disable -->
 
-[贡献者帮助信息](#开发信息)
+<div align="center">
 
-# 发声键盘-KeyBonk
+<img alt="LOGO" src="./resource/icon.png" width="256" height="256" />
+
+# 发声键盘 - KeyBonk
+
+V 1.0.0.0 简单版本
+
+<br>
+<div>
+    <img alt="C++" src="https://img.shields.io/badge/C++-17-%2300599C?logo=cplusplus">
+</div>
+<div>
+    <img alt="platform" src="https://img.shields.io/badge/platform-Windows-blueviolet">
+</div>
+<div>
+    <img alt="license" src="https://img.shields.io/github/license/xiaoditx/KeyBonk">
+    <img alt="commit" src="https://img.shields.io/github/commit-activity/m/xiaoditx/KeyBonk">
+</div>
+<div>
+    <img alt="stars" src="https://img.shields.io/github/stars/xiaoditx/KeyBonk?style=social">
+    <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/xiaoditx/KeyBonk/total?style=social">
+</div>
+</div>
+<br>
+<div>
+    <a href="#开发信息">贡献者帮助信息</a>
+</div>
+<br>
+
+<!-- markdownlint-restore -->
 
 > [!note]
 > 当前版本为预先发布版，版本号V1.0.0.0
@@ -47,3 +75,20 @@
 - MSYS2（MingGW64）
 - VScode
 - GNU Make
+
+## 贡献者
+
+[![Contributors](https://contrib.rocks/image?repo=xiaoditx/beepmusic)](https://github.com/xiaoditx/beepmusic/graphs/contributors)
+
+## 项目统计
+
+<a href="https://www.star-history.com/#xiaoditx/KeyBonk&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xiaoditx/KeyBonk&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xiaoditx/KeyBonk&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xiaoditx/KeyBonk&type=date&legend=top-left" />
+ </picture>
+</a>
+
+
+![Alt](https://repobeats.axiom.co/api/embed/148eacdfa3e1268ce951923b74ab7f6ed8d8a9e7.svg "Repobeats analytics image")
