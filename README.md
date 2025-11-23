@@ -38,7 +38,7 @@ V 1.0.0.0 简单版本
 > 当前代码错误处理功能不足
 
 
-基于曾经做过的唯一能入眼的软件“坤音键盘”的4.0版本重构的C++版本，原版公开了源码但没有在GitHub上开源，因为那是一个易语言项目，源码只有一个文件所以似乎没有什么开到GitHub的必要（况且GitHub默认不识别易语言，虽然我们可以手动设定但我不喜欢）
+基于曾经做过的唯一能入眼的软件“坤音键盘”的4.0版本重构的C++版本，原版公开了源码但没有传到GitHub，因为那是一个易语言项目，源码只有一个文件所以似乎没有什么开到GitHub的必要（况且GitHub默认不识别易语言，虽然我们可以手动设定但我不喜欢）
 
 ### 重构的变动
 
@@ -77,6 +77,8 @@ V 1.0.0.0 简单版本
 - GNU Make
 
 ## 贡献者
+
+感谢社区的贡献者们（其实现在并没有）
 
 [![Contributors](https://contrib.rocks/image?repo=xiaoditx/beepmusic)](https://github.com/xiaoditx/beepmusic/graphs/contributors)
 
