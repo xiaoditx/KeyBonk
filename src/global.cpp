@@ -1,4 +1,4 @@
-// global.cpp
+// ===./src/global.cpp===
 // 全局变量定义
 
 #include <windows.h>
