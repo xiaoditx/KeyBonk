@@ -1,4 +1,4 @@
-// window_manager.cpp
+// ===./src/window_manager.cpp===
 // 窗口管理相关功能实现
 
 #include <windows.h>
@@ -88,17 +88,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                 EndPaint(hwnd, &ps);
 		}
 		return 0;
+
         case WM_SIZE:{
                 // 窗口大小改变时强制重绘
                 InvalidateRect(hwnd, NULL, TRUE);
                 return 0;
-            }
+        }
+        
         case WM_NCHITTEST: {
             LRESULT hit = DefWindowProc(hwnd, uMsg, wParam, lParam);
             // 让客户区可拖动
             if (hit == HTCLIENT && (GetAsyncKeyState(VK_LBUTTON) & 0x8000)) hit = HTCAPTION;
             return hit;
         }
+        
         case WM_COMMAND:
             switch (LOWORD(wParam)){
                 case IDM_WINDOW_PENETRATE:
@@ -114,9 +117,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam){
                 case IDM_MINIMUM:
                     minimum =! minimum;
                     if(minimum){
-                        ShowWindow(hwnd, SW_MINIMIZE);
+                        ShowWindow(hwnd, SW_HIDE);
                     }else{
-                        ShowWindow(hwnd, SW_RESTORE);
+                        ShowWindow(hwnd, SW_SHOW);
                     }
                     break;
                 case IDM_SETTINGS:

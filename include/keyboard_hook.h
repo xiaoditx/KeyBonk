@@ -1,4 +1,4 @@
-// keyboard_hook.h
+// ===./include/keyboard_hook.h===
 // 键盘钩子相关功能
 
 #ifndef KEYBOARD_HOOK_H

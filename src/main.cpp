@@ -1,4 +1,4 @@
-// === ./main.cpp ===
+// === ./src/main.cpp ===
 // 主程序存放的文件
 // 包含消息循环，作为入口
 
@@ -73,10 +73,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     ShowWindow(hwnd, nCmdShow); //展示窗口
 
     // 初始化GDI+
-    Gdiplus::GpStatus GDIpStatus;
+    Gdiplus::GpStatus GDIpStatus; // 接收GDI+库的状态（错误码）
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     GDIpStatus = Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, NULL);
-	if(GDIpStatus != Gdiplus::Ok){
+	if(GDIpStatus != Gdiplus::Ok){ // 如果存在问题
         MessageBoxExW(
             NULL,L"错误：00003，初始化GDI+库时发生异常",
             L"KB - 运行时发生错误",MB_OK|MB_ICONEXCLAMATION,0
@@ -87,7 +87,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     g_pBackgroundImage = new Gdiplus::Image(L"./resource/background.png");
 
     // 安装钩子
-    HHOOK KeyboardHook = NULL;
+    HHOOK KeyboardHook = NULL; // 钩子句柄
     KeyboardHook = SetWindowsHookExW(
         WH_KEYBOARD_LL, // 低级键盘钩子
         // 似乎也能用WH_KEYBOARD，但低级钩子用起来更稳定、简单些
@@ -95,7 +95,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         GetModuleHandle(NULL),
         0
     );
-    if(KeyboardHook == NULL){
+    if(KeyboardHook == NULL){ // 没拿到句柄则失败
         MessageBoxExW(
             NULL,L"错误：00004，键盘钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误",MB_OK|MB_ICONEXCLAMATION,0
