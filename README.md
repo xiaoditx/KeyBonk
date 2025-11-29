@@ -80,7 +80,9 @@ V 1.0.0.0 简单版本
 
 感谢社区的贡献者们（其实现在并没有）
 
-[![Contributors](https://contrib.rocks/image?repo=xiaoditx/beepmusic)](https://github.com/xiaoditx/beepmusic/graphs/contributors)
+<a href="https://github.com/xiaoditx/keybonk/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=xiaoditx/keybonk" />
+</a>
 
 ## 项目统计
 
