@@ -1,4 +1,4 @@
-// keybonk_global.h
+// ===./include/keybonk_global.h===
 // 全局变量和共享定义
 
 #ifndef KEYBONK_GLOBAL_H
