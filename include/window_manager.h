@@ -1,4 +1,4 @@
-// window_manager.h
+// ===./src/window_manager.h/
 // 窗口管理相关功能
 
 #ifndef WINDOW_MANAGER_H
