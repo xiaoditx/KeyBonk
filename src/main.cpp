@@ -20,6 +20,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     // 保存hInstance到全局
     C_hInstance = hInstance;
 
+    int windowPositionX = GetPrivateProfileInt(L"record",L"win-x",100,L"./config.ini");
+    int windowPositionY = GetPrivateProfileInt(L"record",L"win-y",100,L"./config.ini");
+    
     // 初始化COM库
     hrMain = CoInitializeEx(NULL,
         // 单元线程，禁用OLE1
