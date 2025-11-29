@@ -168,6 +168,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
     {
         AddTrayIcon(hwnd);
+        // 设置标准箭头鼠标指针
+        SetCursor(LoadCursor(NULL, IDC_ARROW));
     }
     break;
 
