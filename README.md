@@ -6,7 +6,7 @@
 
 # 发声键盘 - KeyBonk
 
-V 1.0.0.0 简单版本
+V 1.0.2.0 基础版本
 
 <br>
 <div>
@@ -33,8 +33,6 @@ V 1.0.0.0 简单版本
 <!-- markdownlint-restore -->
 
 > [!note]
-> 当前版本为预先发布版，版本号V1.0.0.0
->
 > 当前代码错误处理功能不足
 
 
@@ -86,13 +84,12 @@ V 1.0.0.0 简单版本
 
 ## 项目统计
 
-<a href="https://www.star-history.com/#xiaoditx/KeyBonk&type=date&legend=top-left">
+<a href="https://www.star-history.com/#xiaoditx/keybonk&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xiaoditx/KeyBonk&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xiaoditx/KeyBonk&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xiaoditx/KeyBonk&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xiaoditx/keybonk&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xiaoditx/keybonk&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xiaoditx/keybonk&type=date&legend=top-left" />
  </picture>
 </a>
-
 
 ![Alt](https://repobeats.axiom.co/api/embed/148eacdfa3e1268ce951923b74ab7f6ed8d8a9e7.svg "Repobeats analytics image")
