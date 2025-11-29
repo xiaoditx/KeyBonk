@@ -33,8 +33,6 @@ V 1.0.2.0 基础版本
 <!-- markdownlint-restore -->
 
 > [!note]
-> 当前版本为预先发布版，版本号V1.0.0.0
->
 > 当前代码错误处理功能不足
 
 
@@ -85,8 +83,6 @@ V 1.0.2.0 基础版本
 </a>
 
 ## 项目统计
-
-## Star History
 
 <a href="https://www.star-history.com/#xiaoditx/keybonk&type=date&legend=top-left">
  <picture>
