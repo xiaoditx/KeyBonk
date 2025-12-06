@@ -27,8 +27,8 @@ IDI_MY_ICON ICON "./ico/64.ico"
 
 // 版本信息
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     1,0,2,0  // 文件版本 
-PRODUCTVERSION  1,0,2,0  // 产品版本 
+FILEVERSION     1,1,0,0  // 文件版本 
+PRODUCTVERSION  1,1,0,0  // 产品版本 
 FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
 FILEFLAGS       0x0      // 0=正式版, VS_FF_DEBUG=调试版
 FILEOS          VOS_NT_WINDOWS32
@@ -41,12 +41,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName",        "小狄同学呀"
             VALUE "FileDescription",    "进阶的“坤音键盘V4”，可以在按键后播放音效"
-            VALUE "FileVersion",        "1.0.2.0"
+            VALUE "FileVersion",        "1.1.0.0"
             VALUE "InternalName",       "keybonk.exe"
             VALUE "LegalCopyright",     " WTFPL 开源"
             VALUE "OriginalFilename",   "keybonk.exe"
             VALUE "ProductName",        "KeyBonk"
-            VALUE "ProductVersion",     "1.0.2.0"
+            VALUE "ProductVersion",     "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
