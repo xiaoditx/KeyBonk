@@ -14,6 +14,9 @@
 #include "../include/window_manager.h"
 #include "../resource/resources.h"
 
+// 关于窗口的向前声明
+LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 // 设置窗口穿透
 bool SetWindowMouseTransparent(HWND hWnd, bool enable)
 {
@@ -36,7 +39,36 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
     return true;
 }
 
-// 消息处理
+void aboutWindowOpen()
+{
+
+    // 注册窗口类
+    const wchar_t CLASS_NAME[] = L"KeyBonk“关于”窗口";
+    WNDCLASSEX wc = {};                // 用0初始化整个WindowClass
+    wc.cbSize = sizeof(WNDCLASSEX);    // 设置结构体大小
+    wc.lpfnWndProc = WindowProc_about; // 指定WindowProc_about函数
+    wc.hInstance = C_hInstance;
+    wc.lpszClassName = CLASS_NAME; // 窗口类名称
+    wc.hIcon = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
+    wc.hIconSm = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
+    RegisterClassEx(&wc);                                                                            // 注册
+
+    hwndAbout = CreateWindowExW(
+        0, CLASS_NAME, L"关于",
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300,
+        hwnd, NULL, C_hInstance, NULL);
+
+    // 创建失败则提示并返回，结束运行
+    if (hwndAbout == NULL)
+    {
+        MessageBoxExW(
+            NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
+            L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+    }
+    ShowWindow(hwndAbout, C_nCmdShow);
+}
+
+// 主窗口消息处理
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -159,9 +191,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 L"嘻嘻", MB_OK | MB_ICONEXCLAMATION, 0);
             break;
         case IDM_ABOUT:
-            MessageBoxExW(
-                NULL, L"还没有开发呢",
-                L"嘻嘻", MB_OK | MB_ICONEXCLAMATION, 0);
+            aboutWindowOpen();
             break;
         }
         return 0;
@@ -218,6 +248,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return DefWindowProcW(hwnd, uMsg, wParam, lParam);
     }
     return 0;
+}
+
+// 关于窗口消息处理
+LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_DESTROY:
+        DestroyWindow(hwndAbout);
+        return 0;
+
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        EndPaint(hwnd, &ps);
+    }
+        return 0;
+    }
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 // 添加托盘图标函数

@@ -19,8 +19,9 @@
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 
-    // 保存hInstance到全局
+    // 保存一些参数到全局
     C_hInstance = hInstance;
+    C_nCmdShow = nCmdShow;
 
     // 读取配置项文件中的record（上次退出时记录）部分
     // win-x和win-y 上次退出时的窗口位置
@@ -42,12 +43,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     // 注册窗口类
     const wchar_t CLASS_NAME[] = L"KeyBonk主窗口";
-    WNDCLASS wc = {};            // 用0初始化整个WindowClass
-    wc.lpfnWndProc = WindowProc; // 指定WindowProc函数
+    WNDCLASSEX wc = {};             // 用0初始化整个WindowClass
+    wc.cbSize = sizeof(WNDCLASSEX); // 设置结构体大小
+    wc.lpfnWndProc = WindowProc;    // 指定WindowProc函数
     wc.hInstance = hInstance;
-    wc.lpszClassName = CLASS_NAME;              // 窗口类名称
-    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION); // 图标（其实意义不大）
-    RegisterClass(&wc);                         // 注册
+    wc.lpszClassName = CLASS_NAME; // 窗口类名称
+    wc.hIcon = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
+    wc.hIconSm = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
+    RegisterClassEx(&wc);                                                                            // 注册
 
     // 创建窗口
     hwnd = CreateWindowExW(
@@ -69,6 +72,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        return 0;
+    }
+
+    if (hwnd == NULL)
+    {
         return 0;
     }
 
