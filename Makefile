@@ -6,11 +6,11 @@
 	-luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
 
 # main.o
-./src/obj/main.o: ./src/main.cpp
+./src/obj/main.o: ./src/main.cpp ./include/keybonk_global.h ./include/window_manager.h ./include/keyboard_hook.h ./resource/resources.h
 	g++ -o ./src/obj/main.o ./src/main.cpp -c -std=c++17 -I./include
 
 # global.o
-./src/obj/global.o: ./src/global.cpp
+./src/obj/global.o: ./src/global.cpp ./include/keybonk_global.h
 	g++ -o ./src/obj/global.o ./src/global.cpp -c -std=c++17 -I./include
 
 # window_manager.o
@@ -18,13 +18,13 @@
 	g++ -o ./src/obj/window_manager.o ./src/window_manager.cpp -c -std=c++17 -I./include
 
 # keyboard_hook.o
-./src/obj/keyboard_hook.o: ./src/keyboard_hook.cpp
+./src/obj/keyboard_hook.o: ./src/keyboard_hook.cpp ./include/keyboard_hook.h ./include/utils.h
 	g++ -o ./src/obj/keyboard_hook.o ./src/keyboard_hook.cpp -c -std=c++17 -I./include
 
 # utils.o
-./src/obj/utils.o: ./src/utils.cpp
+./src/obj/utils.o: ./src/utils.cpp ./include/utils.h
 	g++ -o ./src/obj/utils.o ./src/utils.cpp -c -std=c++17 -I./include
 
 # 资源文件
-./resource/resources.o: ./resource/resources.rc
+./resource/resources.o: ./resource/resources.rc ./resource/resources.h
 	windres .\resource\resources.rc -F pe-x86-64 -o .\resource\resources.o
