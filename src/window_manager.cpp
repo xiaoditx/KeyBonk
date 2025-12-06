@@ -71,7 +71,7 @@ void aboutWindowOpen()
     wc.hIconSm = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    RegisterClassEx(&wc);                                                                            // 注册
+    RegisterClassEx(&wc); // 注册
 
     hwndAbout = CreateWindowExW(
         WS_EX_APPWINDOW, CLASS_NAME, L"关于 KeyBonk",
@@ -105,7 +105,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 WritePrivateProfileString(L"record", L"win-x", x.c_str(), L"./config.ini");
                 WritePrivateProfileString(L"record", L"win-y", y.c_str(), L"./config.ini");
             }
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
         }
+        return 0;
 
     case WM_DESTROY:
         if (g_pBackgroundImage)
@@ -185,31 +187,34 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
-        case IDM_WINDOW_PENETRATE:// 菜单-窗口穿透
+        case IDM_WINDOW_PENETRATE: // 菜单-窗口穿透
             WindowPenetrate = (!WindowPenetrate);
             SetWindowMouseTransparent(hwnd, WindowPenetrate);
             break;
-        case IDM_MUTE:// 菜单-静音
+        case IDM_MUTE: // 菜单-静音
             Mute = (!Mute);
             break;
-        case IDM_EXIT:// 菜单-退出
+        case IDM_EXIT: // 菜单-退出
             PostMessage(hwnd, WM_CLOSE, 0, 0);
             break;
-        case IDM_MINIMUM:// 菜单-最小化
-            minimum = !minimum;// 将窗口最小化状态取反
-            if (minimum){
-                ShowWindow(hwnd, SW_HIDE);// 隐藏窗口
-            }else{
-                ShowWindow(hwnd, SW_SHOW);// 展示窗口
+        case IDM_MINIMUM:       // 菜单-最小化
+            minimum = !minimum; // 将窗口最小化状态取反
+            if (minimum)
+            {
+                ShowWindow(hwnd, SW_HIDE); // 隐藏窗口
+            }
+            else
+            {
+                ShowWindow(hwnd, SW_SHOW); // 展示窗口
             }
             break;
-        case IDM_SETTINGS:// 菜单-设置
+        case IDM_SETTINGS: // 菜单-设置
             MessageBoxExW(
                 NULL, L"还没有开发呢",
                 L"嘻嘻", MB_OK | MB_ICONEXCLAMATION, 0);
             break;
-        case IDM_ABOUT:// 菜单-关于
-            aboutWindowOpen();// 创建“关于”窗口并展示
+        case IDM_ABOUT:        // 菜单-关于
+            aboutWindowOpen(); // 创建“关于”窗口并展示
             break;
         }
         return 0;
@@ -221,7 +226,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     break;
 
-    case (WM_USER + 1):// 自定义消息：托盘图标点击事件
+    case (WM_USER + 1): // 自定义消息：托盘图标点击事件
         if (lParam == WM_RBUTTONDOWN)
         {
             // 显示右键菜单
@@ -292,12 +297,12 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
         // 创建Logo图标（静态图片控件）
         HWND hLogo = CreateWindowExW(0, L"STATIC", L"",
-            WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_CENTERIMAGE,
-            20, 20, 96, 96,
-            hwnd, (HMENU)IDC_LOGO, C_hInstance, NULL);
+                                     WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_CENTERIMAGE,
+                                     20, 20, 96, 96,
+                                     hwnd, (HMENU)IDC_LOGO, C_hInstance, NULL);
 
         // 使用GDI+加载PNG图片作为Logo
-        Gdiplus::Image* pLogoImage = Gdiplus::Image::FromFile(L"./resource/icon-org.png");
+        Gdiplus::Image *pLogoImage = Gdiplus::Image::FromFile(L"./resource/icon-org.png");
         if (pLogoImage && pLogoImage->GetLastStatus() == Gdiplus::Ok)
         {
             // 创建一个位图来绘制图片
@@ -305,18 +310,18 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             HDC hMemDC = CreateCompatibleDC(hdc);
             HBITMAP hBitmap = CreateCompatibleBitmap(hdc, 96, 96);
             SelectObject(hMemDC, hBitmap);
-            
+
             // 绘制背景为白色（与窗口颜色一致）
             RECT rect = {0, 0, 96, 96};
             FillRect(hMemDC, &rect, (HBRUSH)GetStockObject(WHITE_BRUSH));
-            
+
             // 绘制PNG图片
             Gdiplus::Graphics graphics(hMemDC);
             graphics.DrawImage(pLogoImage, 0, 0, 96, 96);
-            
+
             // 设置位图到静态控件
             SendMessageW(hLogo, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
-            
+
             // 释放资源
             delete pLogoImage;
             DeleteDC(hMemDC);
@@ -325,64 +330,64 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
         // 创建软件名称文本
         CreateWindowExW(0, L"STATIC", L"KeyBonk",
-            WS_CHILD | WS_VISIBLE | SS_CENTER | SS_NOPREFIX,
-            130, 20, clientWidth - 150, 30,
-            hwnd, (HMENU)IDC_SOFTWARE_NAME, C_hInstance, NULL);
+                        WS_CHILD | WS_VISIBLE | SS_CENTER | SS_NOPREFIX,
+                        130, 20, clientWidth - 150, 30,
+                        hwnd, (HMENU)IDC_SOFTWARE_NAME, C_hInstance, NULL);
 
         // 创建软件版本文本
         CreateWindowExW(0, L"STATIC", L"版本: v1.1.0.0",
-            WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
-            130, 60, clientWidth - 150, 20,
-            hwnd, (HMENU)IDC_VERSION, C_hInstance, NULL);
+                        WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
+                        130, 60, clientWidth - 150, 20,
+                        hwnd, (HMENU)IDC_VERSION, C_hInstance, NULL);
 
         // 创建软件作者文本
         CreateWindowExW(0, L"STATIC", L"作者: 小狄同学呀",
-            WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
-            130, 90, clientWidth - 150, 20,
-            hwnd, (HMENU)IDC_AUTHOR, C_hInstance, NULL);
+                        WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
+                        130, 90, clientWidth - 150, 20,
+                        hwnd, (HMENU)IDC_AUTHOR, C_hInstance, NULL);
 
         // 创建软件介绍文本
-        CreateWindowExW(0, L"STATIC", 
-            L"    KeyBonk是一款键盘音效软件，为了让您收获更优秀的按键效果。"
-            L"软件基于旧版由易语言开发的软件坤音键盘进行重开发，运行效率等方面均有所提升\r\n" 
-            L"    当前版本的变化：新增“关于”窗口",
-            WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
-            20, 130, clientWidth - 40, 120,  // 增加高度以容纳更多内容
-            hwnd, (HMENU)IDC_DESCRIPTION, C_hInstance, NULL);
+        CreateWindowExW(0, L"STATIC",
+                        L"    KeyBonk是一款键盘音效软件，为了让您收获更优秀的按键效果。"
+                        L"软件基于旧版由易语言开发的软件坤音键盘进行重开发，运行效率等方面均有所提升\r\n"
+                        L"    当前版本的变化：新增“关于”窗口",
+                        WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
+                        20, 130, clientWidth - 40, 120, // 增加高度以容纳更多内容
+                        hwnd, (HMENU)IDC_DESCRIPTION, C_hInstance, NULL);
 
         // 创建个人网站链接
         CreateWindowExW(WS_EX_TRANSPARENT, L"STATIC", L"访问我的网站: https://xiaoditx.github.io/",
-            WS_CHILD | WS_VISIBLE | SS_CENTER | SS_NOTIFY | SS_NOPREFIX,
-            20, 270, clientWidth - 40, 30,  // 向下移动位置
-            hwnd, (HMENU)IDC_WEBSITE_LINK, C_hInstance, NULL);
+                        WS_CHILD | WS_VISIBLE | SS_CENTER | SS_NOTIFY | SS_NOPREFIX,
+                        20, 270, clientWidth - 40, 30, // 向下移动位置
+                        hwnd, (HMENU)IDC_WEBSITE_LINK, C_hInstance, NULL);
 
         // 创建关闭按钮
         CreateWindowExW(0, L"BUTTON", L"关闭",
-            WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-            clientWidth - 100, clientHeight - 50, 80, 30,
-            hwnd, (HMENU)IDC_CLOSE_BUTTON, C_hInstance, NULL);
+                        WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+                        clientWidth - 100, clientHeight - 50, 80, 30,
+                        hwnd, (HMENU)IDC_CLOSE_BUTTON, C_hInstance, NULL);
 
         // 设置文本控件的字体
         HFONT hFont = CreateFontW(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
-            DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
-            CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
+                                  DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
+                                  CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
         SendMessageW(GetDlgItem(hwnd, IDC_SOFTWARE_NAME), WM_SETFONT, (WPARAM)hFont, TRUE);
 
         HFONT hNormalFont = CreateFontW(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-            DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
-            CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
+                                        DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
+                                        CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
         SendMessageW(GetDlgItem(hwnd, IDC_VERSION), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
         SendMessageW(GetDlgItem(hwnd, IDC_AUTHOR), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
         SendMessageW(GetDlgItem(hwnd, IDC_DESCRIPTION), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
         SendMessageW(GetDlgItem(hwnd, IDC_WEBSITE_LINK), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
-        
+
         // 为关闭按钮设置微软雅黑字体
         SendMessageW(GetDlgItem(hwnd, IDC_CLOSE_BUTTON), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
 
         // 设置链接文本颜色为蓝色
         // 使用WM_CTLCOLORSTATIC消息来处理文本颜色，这里先设置控件的背景模式
         SetWindowLongW(GetDlgItem(hwnd, IDC_WEBSITE_LINK), GWL_STYLE,
-            GetWindowLongW(GetDlgItem(hwnd, IDC_WEBSITE_LINK), GWL_STYLE) | SS_NOTIFY);
+                       GetWindowLongW(GetDlgItem(hwnd, IDC_WEBSITE_LINK), GWL_STYLE) | SS_NOTIFY);
 
         return 0;
     }
@@ -444,13 +449,13 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         POINT pt;
         GetCursorPos(&pt);
         ScreenToClient(hwnd, &pt);
-        
+
         HWND hLink = GetDlgItem(hwnd, IDC_WEBSITE_LINK);
         RECT linkRect;
         GetWindowRect(hLink, &linkRect);
-        ScreenToClient(hwnd, (POINT*)&linkRect);
-        ScreenToClient(hwnd, (POINT*)&linkRect.right);
-        
+        ScreenToClient(hwnd, (POINT *)&linkRect);
+        ScreenToClient(hwnd, (POINT *)&linkRect.right);
+
         if (PtInRect(&linkRect, pt))
         {
             ShellExecuteW(NULL, L"open", L"https://www.keybonk.com", NULL, NULL, SW_SHOWNORMAL);
@@ -482,8 +487,6 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         }
         break;
     }
-
-
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
