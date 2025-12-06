@@ -2,7 +2,7 @@
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
 #define MyAppName "发声键盘-KeyBonk"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "小狄同学呀"
 #define MyAppURL "https://xiaoditx.github.io/"
 #define MyAppExeName "KeyBonk.exe"
