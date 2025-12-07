@@ -44,6 +44,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "resource\audios\*"; DestDir: "{app}\resource\audios"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "resource\background.png"; DestDir: "{app}\resource"; Flags: ignoreversion
+Source: "resource\icon-org.png"; DestDir: "{app}\resource"; Flags: ignoreversion
 ; 注意: 不要在任何共享系统文件上使用"Flags: ignoreversion"
 
 [Icons]

@@ -14,14 +14,16 @@
 #include "../include/window_manager.h"
 #include "../resource/resources.h"
 
+// 设置窗口消息处理向前声明
+LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 // 关于窗口的向前声明
 LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // 设置窗口穿透
 bool SetWindowMouseTransparent(HWND hWnd, bool enable)
 {
-    if (!hWnd || !IsWindow(hWnd))
-        return false;
+    if (!hWnd || !IsWindow(hWnd)) // 没有句柄或句柄不是窗口
+        return false;             // 返回错误
 
     LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 
@@ -39,6 +41,7 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
     return true;
 }
 
+// 打开“关于”窗口
 void aboutWindowOpen()
 {
     // 检查关于窗口是否已经存在
@@ -87,6 +90,11 @@ void aboutWindowOpen()
     }
     ShowWindow(hwndAbout, C_nCmdShow);
     UpdateWindow(hwndAbout);
+}
+
+// 打开“设置”窗口
+void settingWindowOpen()
+{
 }
 
 // 主窗口消息处理
@@ -489,6 +497,11 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
     }
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+// 设置窗口消息处理
+LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 }
 
 // 添加托盘图标函数
