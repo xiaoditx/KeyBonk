@@ -11,8 +11,8 @@
 #include <shellapi.h>
 #include <winver.h>
 #include <string>
-#include "../include/window_manager.h"
-#include "../resource/resources.h"
+#include "../include/window_manager.hpp"
+#include "../resource/resources.hpp"
 
 // 设置窗口消息处理向前声明
 LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

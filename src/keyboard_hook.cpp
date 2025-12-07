@@ -9,8 +9,8 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <wchar.h>
-#include "../include/keyboard_hook.h"
-#include "../include/utils.h"
+#include "../include/keyboard_hook.hpp"
+#include "../include/utils.hpp"
 
 // 低级键盘钩子的回调函数
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)

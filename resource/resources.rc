@@ -1,4 +1,4 @@
-#include "resources.h"
+#include "resources.hpp"
 #include <winver.h>
 
 #pragma code_page(65001) // UTF-8编译

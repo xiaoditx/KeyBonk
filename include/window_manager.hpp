@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include "keybonk_global.h"
+#include "keybonk_global.hpp"
 
 // 函数声明
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); // 消息处理

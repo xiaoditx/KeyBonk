@@ -10,10 +10,10 @@
 #include <windows.h>
 #include <gdiplus.h>
 #include <shellapi.h>
-#include "../include/keybonk_global.h"
-#include "../include/window_manager.h"
-#include "../include/keyboard_hook.h"
-#include "../resource/resources.h"
+#include "../include/keybonk_global.hpp"
+#include "../include/window_manager.hpp"
+#include "../include/keyboard_hook.hpp"
+#include "../resource/resources.hpp"
 
 // 主程序
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)

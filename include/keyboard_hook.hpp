@@ -5,7 +5,7 @@
 #define KEYBOARD_HOOK_H
 
 #include <windows.h>
-#include "keybonk_global.h"
+#include "keybonk_global.hpp"
 
 // 函数声明
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam); // 钩子回调
