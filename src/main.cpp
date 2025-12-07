@@ -59,7 +59,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         L"KeyBonk主窗口",                                 // 窗口文本
         WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN,          // 窗口风格
                                                           // 大小+位置
-        windowPositionX, windowPositionY, 200, 200,
+        windowPositionX, windowPositionY, 160, 180,
         NULL,      // 父窗口
         NULL,      // 菜单
         hInstance, // 示例句柄
