@@ -1,6 +1,6 @@
 # 主程序
-./KeyBonk.exe: ./src/obj/main.o ./src/obj/global.o ./src/obj/window_manager.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o
-	g++ ./src/obj/main.o ./src/obj/global.o ./src/obj/window_manager.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o \
+./KeyBonk.exe: ./src/obj/main.o ./src/obj/global.o ./src/obj/main_window.o ./src/obj/setting.o ./src/obj/about.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o
+	g++ ./src/obj/main.o ./src/obj/global.o ./src/obj/main_window.o ./src/obj/setting.o ./src/obj/about.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o \
 	-std=c++17 -o ./KeyBonk.exe \
 	-mwindows -municode  \
 	-luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
@@ -13,9 +13,17 @@
 ./src/obj/global.o: ./src/global.cpp ./include/keybonk_global.hpp
 	g++ -o ./src/obj/global.o ./src/global.cpp -c -std=c++17 -I./include
 
-# window_manager.o
-./src/obj/window_manager.o: ./src/window_manager.cpp
-	g++ -o ./src/obj/window_manager.o ./src/window_manager.cpp -c -std=c++17 -I./include
+# main_window.o
+./src/obj/main_window.o: ./src/main_window.cpp
+	g++ -o ./src/obj/main_window.o ./src/main_window.cpp -c -std=c++17 -I./include
+
+# setting.o
+./src/obj/setting.o: ./src/setting.cpp
+	g++ -o ./src/obj/setting.o ./src/setting.cpp -c -std=c++17 -I./include
+
+# about.o
+./src/obj/about.o: ./src/about.cpp
+	g++ -o ./src/obj/about.o ./src/about.cpp -c -std=c++17 -I./include
 
 # keyboard_hook.o
 ./src/obj/keyboard_hook.o: ./src/keyboard_hook.cpp ./include/keyboard_hook.hpp ./include/utils.hpp
