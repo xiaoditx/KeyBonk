@@ -10,14 +10,37 @@
 #include <windows.h>
 #include <gdiplus.h>
 #include <shellapi.h>
+
 #include "../include/keybonk_global.hpp"
 #include "../include/window_manager.hpp"
 #include "../include/keyboard_hook.hpp"
 #include "../resource/resources.hpp"
 
+// 自定义消息
+#define WM_WINDOW_HAS_CREAT (WM_APP + 4) // 窗口以及创建，由后面打开的进程发送到当前窗口
+
+// 检查软件是否重复启动
+// 检查标准为能否根据“窗口类名+窗口标题”的组合查询到主窗口的句柄
+BOOL IsInstanceAlreadyRunning(LPCTSTR windowClass, LPCTSTR windowTitle)
+{
+    HWND f_hWnd = FindWindow(windowClass, windowTitle);
+    if (f_hWnd)
+    {
+        // 找到窗口，激活它
+        PostMessageW(f_hWnd, WM_WINDOW_HAS_CREAT, 0, 0); // 发送窗口消息给已经存在的窗口
+        return TRUE;
+    }
+    return FALSE;
+}
+
 // 主程序
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+
+    if (IsInstanceAlreadyRunning(L"KeyBonk主窗口", L"KeyBonk主窗口"))
+    {
+        return 0;
+    }
 
     // 保存一些参数到全局
     C_hInstance = hInstance;
