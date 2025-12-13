@@ -1,17 +1,12 @@
-// ===./include/window_manager.h/
-// 窗口管理相关功能
+// ===./include/window_manager.hpp===
+// 窗口管理相关功能，历史版本的遗留文件
 
 #ifndef WINDOW_MANAGER_H
 #define WINDOW_MANAGER_H
 
-#include <windows.h>
-#include <gdiplus.h>
-#include "keybonk_global.hpp"
-
-// 函数声明
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); // 消息处理
-BOOL AddTrayIcon(HWND hWnd);
-void RemoveTrayIcon();
-bool SetWindowMouseTransparent(HWND hWnd, bool enable);
+// 包含所有窗口的头文件
+#include "main_window.hpp"
+#include "setting.hpp"
+#include "about.hpp"
 
 #endif // WINDOW_MANAGER_H
