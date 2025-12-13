@@ -1,7 +1,7 @@
 // ===./src/main_window.cpp===
 // 主窗口相关功能实现
 
-#ifndef UNICODE// UNICODE宏可以让Windows函数自动的匹配到W版本
+#ifndef UNICODE // UNICODE宏可以让Windows函数自动的匹配到W版本
 #define UNICODE
 #endif
 
@@ -14,6 +14,9 @@
 #include "../include/about.hpp"
 #include "../include/keybonk_global.hpp"
 #include "../resource/resources.hpp"
+
+// 自定义消息
+#define WM_WINDOW_HAS_CREAT (WM_APP + 4) // 窗口以及创建，由后面打开的进程发送到当前窗口
 
 // 设置窗口穿透
 bool SetWindowMouseTransparent(HWND hWnd, bool enable)
@@ -68,6 +71,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         CoUninitialize();                         // 关闭COM库
         PostQuitMessage(0);
         return 0;
+
+    case WM_WINDOW_HAS_CREAT:
+    {
+        minimum = false;              // 将窗口最小化状态设置为假
+        ShowWindow(hwnd, SW_RESTORE); // 恢复窗口
+        // 下面这些主要是为了防止特殊情况：
+        SetForegroundWindow(hwnd); // 将窗口带到前台
+        // 额外确保激活（某些系统需要）
+        SetActiveWindow(hwnd);
+        SetFocus(hwnd);
+        // FlashWindow(hwnd, TRUE); // 我又没有任务栏图标和标题栏我写这玩意干啥？啧啧
+        return 0;
+    }
 
     case WM_RBUTTONDOWN:
     {
