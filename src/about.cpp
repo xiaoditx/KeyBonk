@@ -66,32 +66,35 @@ void aboutWindowOpen()
 }
 
 // “关于”窗口使用：控件ID定义
-#define IDC_LOGO 1001
-#define IDC_SOFTWARE_NAME 1002
-#define IDC_VERSION 1003
-#define IDC_AUTHOR 1004
-#define IDC_DESCRIPTION 1005
-#define IDC_CLOSE_BUTTON 1006
-#define IDC_WEBSITE_LINK 1007
+// （这些内容仅在此处出现，不独立放入头文件）
+#define IDC_LOGO 1001          // 显示软件logo的图片框
+#define IDC_SOFTWARE_NAME 1002 // 软件名（标签）
+#define IDC_VERSION 1003       // 软件版本（标签）
+#define IDC_AUTHOR 1004        // 作者（标签）
+#define IDC_DESCRIPTION 1005   // 描述（标签）
+#define IDC_CLOSE_BUTTON 1006  // 关闭按钮
+#define IDC_WEBSITE_LINK 1007  // 网页链接（标签）
 
 // 关于窗口消息处理
 LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
+    // 窗口创建完毕，绘制组件
     case WM_CREATE:
     {
         // 获取客户区大小
         RECT rect;
         GetClientRect(hwnd, &rect);
-        int clientWidth = rect.right - rect.left;
-        int clientHeight = rect.bottom - rect.top;
+        int clientWidth = rect.right - rect.left;  // 客户区宽度
+        int clientHeight = rect.bottom - rect.top; // 客户区高度
 
         // 创建Logo图标（静态图片控件）
-        HWND hLogo = CreateWindowExW(0, L"STATIC", L"",
-                                     WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_CENTERIMAGE,
-                                     20, 20, 96, 96,
-                                     hwnd, (HMENU)IDC_LOGO, C_hInstance, NULL);
+        HWND hLogo = CreateWindowExW(
+            0, L"STATIC", L"",
+            WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_CENTERIMAGE,
+            20, 20, 96, 96,
+            hwnd, (HMENU)IDC_LOGO, C_hInstance, NULL);
 
         // 使用GDI+加载PNG图片作为Logo
         Gdiplus::Image *pLogoImage = Gdiplus::Image::FromFile(L"./resource/icon-org.png");
@@ -160,11 +163,13 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         hwnd, (HMENU)IDC_CLOSE_BUTTON, C_hInstance, NULL);
 
         // 设置文本控件的字体
+        // 软件名的字体设置
         HFONT hFont = CreateFontW(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
                                   DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
                                   CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
         SendMessageW(GetDlgItem(hwnd, IDC_SOFTWARE_NAME), WM_SETFONT, (WPARAM)hFont, TRUE);
 
+        // 其余文本组件的字体设置
         HFONT hNormalFont = CreateFontW(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                                         DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
                                         CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
@@ -173,7 +178,7 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         SendMessageW(GetDlgItem(hwnd, IDC_DESCRIPTION), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
         SendMessageW(GetDlgItem(hwnd, IDC_WEBSITE_LINK), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
 
-        // 为关闭按钮设置微软雅黑字体
+        // 关闭按钮字体设置
         SendMessageW(GetDlgItem(hwnd, IDC_CLOSE_BUTTON), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
 
         // 设置链接文本颜色为蓝色
@@ -242,14 +247,15 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         GetCursorPos(&pt);
         ScreenToClient(hwnd, &pt);
 
-        HWND hLink = GetDlgItem(hwnd, IDC_WEBSITE_LINK);
-        RECT linkRect;
+        HWND hLink = GetDlgItem(hwnd, IDC_WEBSITE_LINK); // 获取链接窗口句柄
+        RECT linkRect;                                   // 用于存放链接位置的变量
         GetWindowRect(hLink, &linkRect);
         ScreenToClient(hwnd, (POINT *)&linkRect);
         ScreenToClient(hwnd, (POINT *)&linkRect.right);
 
-        if (PtInRect(&linkRect, pt))
+        if (PtInRect(&linkRect, pt)) // 如果点击在链接的位置内
         {
+            // 打开网站
             ShellExecuteW(NULL, L"open", L"https://www.keybonk.com", NULL, NULL, SW_SHOWNORMAL);
         }
         break;
