@@ -1,38 +1,54 @@
-# 主程序
-./KeyBonk.exe: ./src/obj/main.o ./src/obj/global.o ./src/obj/main_window.o ./src/obj/setting.o ./src/obj/about.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o
-	g++ ./src/obj/main.o ./src/obj/global.o ./src/obj/main_window.o ./src/obj/setting.o ./src/obj/about.o ./src/obj/keyboard_hook.o ./src/obj/utils.o ./resource/resources.o \
-	-std=c++17 -o ./KeyBonk.exe \
-	-mwindows -municode  \
-	-luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
+SHELL         := cmd
+.SUFFIXES:
 
-# main.o
-./src/obj/main.o: ./src/main.cpp ./include/keybonk_global.hpp ./include/window_manager.hpp ./include/keyboard_hook.hpp ./resource/resources.hpp
-	g++ -o ./src/obj/main.o ./src/main.cpp -c -std=c++17 -I./include
+# ---------- 基本变量 ----------
+CXX      := g++
+WINDRES  := windres
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -O2
+LDFLAGS  := -mwindows -municode
+LDLIBS   := -luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
 
-# global.o
-./src/obj/global.o: ./src/global.cpp ./include/keybonk_global.hpp
-	g++ -o ./src/obj/global.o ./src/global.cpp -c -std=c++17 -I./include
+# ---------- 目录变量 ----------
+SRC_DIR  := src
+INC_DIR  := include
+RES_DIR  := resource
+OBJ_DIR  := $(SRC_DIR)/obj
+BIN      := KeyBonk.exe
 
-# main_window.o
-./src/obj/main_window.o: ./src/main_window.cpp
-	g++ -o ./src/obj/main_window.o ./src/main_window.cpp -c -std=c++17 -I./include
+# ---------- 源文件列表 ----------
+CXX_SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+RES_SRC  := $(RES_DIR)/resources.rc
 
-# setting.o
-./src/obj/setting.o: ./src/setting.cpp
-	g++ -o ./src/obj/setting.o ./src/setting.cpp -c -std=c++17 -I./include
+# ---------- 自动推导对象 ----------
+CXX_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CXX_SRCS))
+RES_OBJ  := $(RES_DIR)/resources.o
 
-# about.o
-./src/obj/about.o: ./src/about.cpp
-	g++ -o ./src/obj/about.o ./src/about.cpp -c -std=c++17 -I./include
+# ---------- 默认目标 ----------
+.PHONY: all clean
+all: $(BIN)
 
-# keyboard_hook.o
-./src/obj/keyboard_hook.o: ./src/keyboard_hook.cpp ./include/keyboard_hook.hpp ./include/utils.hpp
-	g++ -o ./src/obj/keyboard_hook.o ./src/keyboard_hook.cpp -c -std=c++17 -I./include
+# ---------- 链接 ----------
+$(BIN): $(CXX_OBJS) $(RES_OBJ)
+	$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-# utils.o
-./src/obj/utils.o: ./src/utils.cpp ./include/utils.hpp
-	g++ -o ./src/obj/utils.o ./src/utils.cpp -c -std=c++17 -I./include
+# ---------- 编译对象文件 ----------
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CXXFLAGS) -I$(INC_DIR) -MMD -MP -c $< -o $@
 
-# 资源文件
-./resource/resources.o: ./resource/resources.rc ./resource/resources.hpp
-	windres .\resource\resources.rc -F pe-x86-64 -o .\resource\resources.o
+# ---------- 资源文件 ----------
+$(RES_OBJ): $(RES_SRC)
+	$(WINDRES) $< -F pe-x86-64 -o $@
+
+# ---------- 自动依赖 ----------
+-include $(CXX_OBJS:.o=.d)
+
+# ---------- 目录与清理 ----------
+$(OBJ_DIR):
+	if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
+
+clean:
+	-del /Q $(OBJ_DIR)\*.o $(OBJ_DIR)\*.d $(RES_OBJ) $(BIN)
+
+# ---------- 帮助 ----------
+help:
+	@echo 可用目标: all clean help

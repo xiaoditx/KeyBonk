@@ -12,6 +12,7 @@
 #include <string>
 #include "../include/main_window.hpp"
 #include "../include/about.hpp"
+#include "../include/setting.hpp"
 #include "../include/keybonk_global.hpp"
 #include "../resource/resources.hpp"
 
@@ -173,9 +174,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             break;
         case IDM_SETTINGS: // 菜单-设置
-            MessageBoxExW(
-                NULL, L"还没有开发呢",
-                L"嘻嘻", MB_OK | MB_ICONEXCLAMATION, 0);
+            settingWindowOpen();
             break;
         case IDM_ABOUT:        // 菜单-关于
             aboutWindowOpen(); // 创建“关于”窗口并展示
