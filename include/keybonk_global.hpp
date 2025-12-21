@@ -11,6 +11,7 @@
 extern ULONG_PTR g_gdiplusToken;           // GDI+的token
 extern HWND hwnd;                          // 主窗口句柄
 extern HWND hwndAbout;                     // "关于"窗口句柄
+extern HWND hwndSetting;                   // “设置”窗口句柄
 extern Gdiplus::Image *g_pBackgroundImage; // 背景图片
 extern bool Mute;                          // 是否静音
 extern bool WindowPenetrate;               // 窗口穿透

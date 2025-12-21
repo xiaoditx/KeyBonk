@@ -9,7 +9,6 @@
 #include "keybonk_global.hpp"
 
 // 函数声明
-void settingWindowOpen(); // 打开设置窗口
+void settingWindowOpen();                                                                // 打开设置窗口
 LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); // 设置窗口消息处理
-
-#endif // SETTING_H
+#endif                                                                                   // SETTING_H
