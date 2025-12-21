@@ -46,8 +46,10 @@ $(RES_OBJ): $(RES_SRC)
 $(OBJ_DIR):
 	if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
 
+
 clean:
-	-del /Q $(OBJ_DIR)\*.o $(OBJ_DIR)\*.d $(RES_OBJ) $(BIN)
+	del /Q /S *.o *.d
+	del /Q KeyBonk.exe
 
 # ---------- 帮助 ----------
 help:
