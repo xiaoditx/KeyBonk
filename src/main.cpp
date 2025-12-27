@@ -14,6 +14,7 @@
 #include "../include/keybonk_global.hpp"
 #include "../include/window_manager.hpp"
 #include "../include/keyboard_hook.hpp"
+#include "../include/utils.hpp"
 #include "../resource/resources.hpp"
 
 // 自定义消息
@@ -51,7 +52,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, L"./config.ini");
     int windowPositionY = GetPrivateProfileInt(L"record", L"win-y", 100, L"./config.ini");
 
-    // 初始化COM库
+    // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL,
                             // 单元线程，禁用OLE1
                             COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -98,12 +99,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         return 0;
     }
 
-    if (hwnd == NULL)
-    {
-        return 0;
-    }
-
-    // 设置透明
+    // 设置透明，这个版本颜色先写死在代码里
     COLORREF crKey = 13217535; // 偏粉红色的颜色
     SetLayeredWindowAttributes(hwnd, crKey, 0, LWA_COLORKEY);
 
@@ -117,6 +113,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     { // 如果存在问题
         MessageBoxExW(
             NULL, L"错误：00003，初始化GDI+库时发生异常",
+            L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        return 0;
+    }
+
+    if (!FileExists(L"./resource/background.png"))
+    {
+        MessageBoxExW(
+            NULL, L"错误：00004，找不到背景图片，请检查文件夹完整性",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         return 0;
     }
@@ -134,7 +138,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     if (KeyboardHook == NULL)
     { // 没拿到句柄则失败
         MessageBoxExW(
-            NULL, L"错误：00004，键盘钩子安装失败，请检查杀毒软件是否关闭",
+            NULL, L"错误：00005，键盘钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
     }
 
