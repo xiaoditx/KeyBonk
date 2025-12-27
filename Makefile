@@ -56,7 +56,7 @@ $(RES_OBJ): $(RES_SRC)
 # 自动依赖 
 -include $(CXX_OBJS:.o=.d)
 
-# 目录创建和文件复制
+# 目录创建和文件复制（这里还要优化一下）
 $(OBJ_DIR):
 	if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
 	if not exist "$(OBJ_DIR)\src" mkdir "$(OBJ_DIR)\src"
