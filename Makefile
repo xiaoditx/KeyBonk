@@ -35,14 +35,14 @@ RES_SRC  := $(RES_DIR)/resources.rc
 
 # 自动推导对象 
 CXX_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CXX_SRCS))
-RES_OBJ  := $(OBJ_DIR)/src/resources.o
+RES_OBJ  := $(OBJ_DIR)/rc/resources.o
 
 # 默认目标 
 .PHONY: all clean help
 all: $(BIN)
 
 # 链接 
-$(BIN): $(CXX_OBJS) $(RES_OBJ)
+$(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)\resource
 	$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 # 编译对象文件 
@@ -50,7 +50,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -I$(INC_DIR) -MMD -MP -c $< -o $@
 
 # 资源文件 
-$(RES_OBJ): $(RES_SRC)
+$(RES_OBJ): $(RES_SRC) | $(OBJ_DIR)\rc
 	$(WINDRES) $< $(WINDRES_FLAG) $@
 
 # 自动依赖 
@@ -59,12 +59,16 @@ $(RES_OBJ): $(RES_SRC)
 # 目录创建和文件复制（这里还要优化一下）
 $(OBJ_DIR):
 	if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
-	if not exist "$(OBJ_DIR)\src" mkdir "$(OBJ_DIR)\src"
-	if not exist "$(BUILD_DIR)\resource" mkdir "$(BUILD_DIR)\resource"
-	xcopy /E /Y "resource\audios" "$(BUILD_DIR)\resource\audios\\" >nul
-	xcopy /Y "resource\background.png" "$(BUILD_DIR)\resource\\" >nul
-	xcopy /Y "resource\icon-org.png" "$(BUILD_DIR)\resource\\" >nul
-	echo Resources copied to $(BUILD_DIR)\resource
+
+$(OBJ_DIR)\rc:
+	if not exist "$(OBJ_DIR)\rc" mkdir "$(OBJ_DIR)\rc"
+
+$(BUILD_DIR)\resource:
+	@if not exist "$(BUILD_DIR)\resource" mkdir "$(BUILD_DIR)\resource"
+	@xcopy /E /Y "resource\audios" "$(BUILD_DIR)\resource\audios\\" >nul
+	@xcopy /Y "resource\background.png" "$(BUILD_DIR)\resource\\" >nul
+	@xcopy /Y "resource\icon-org.png" "$(BUILD_DIR)\resource\\" >nul
+	@echo Resources copied to $(BUILD_DIR)\resource
 
 # 文件清理
 clean:
