@@ -138,7 +138,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     if (KeyboardHook == NULL)
     { // 没拿到句柄则失败
         MessageBoxExW(
-            NULL, L"错误：00005，键盘钩子安装失败，请检查杀毒软件是否关闭",
+            NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
+            L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+    }
+
+    // 鼠标钩子
+    HHOOK MouseHook = NULL; // 钩子句柄
+    MouseHook = SetWindowsHookExW(
+        WH_MOUSE_LL,       // 低级鼠标钩子
+        LowLevelMouseProc, // 传递回调函数地址
+        GetModuleHandle(NULL),
+        0);
+    if (MouseHook == NULL)
+    { // 没拿到句柄则失败
+        MessageBoxExW(
+            NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
     }
 

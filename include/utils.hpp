@@ -9,6 +9,13 @@
 // 函数声明
 bool FileExists(const wchar_t *rawPath);
 
+// 取随机数
+namespace random
+{
+    int getInt(int min, int max);
+    double getDouble(double min, double max);
+}
+
 // 模板函数声明
 template <typename T>
 void safeRelease(T **resourcePointer);
