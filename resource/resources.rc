@@ -9,7 +9,8 @@ BEGIN
     POPUP "菜单"
     BEGIN
         MENUITEM "窗口穿透(&W)", IDM_WINDOW_PENETRATE
-        MENUITEM "静音(&D)", IDM_MUTE
+        MENUITEM "键盘静音(&D)", IDM_MUTE
+        MENUITEM "鼠标静音(&K)", IDM_MUTE_MOUSE
         MENUITEM "最小化(&M)", IDM_MINIMUM
         MENUITEM SEPARATOR
         MENUITEM "设置(&S)...", IDM_SETTINGS

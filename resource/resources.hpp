@@ -11,7 +11,8 @@
 #define IDM_SETTINGS 1004
 #define IDM_ABOUT 1005
 #define IDM_MUTE 1006
-#define IDM_MINIMUM 1007
+#define IDM_MUTE_MOUSE 1007
+#define IDM_MINIMUM 1008
 
 // 字符串表
 #define IDS_APP_TITLE 10001

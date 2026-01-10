@@ -35,10 +35,10 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
-// 低级键盘钩子的回调函数
+// 低级鼠标钩子的回调函数
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if ((wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) and not Mute)
+    if ((wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) and not MuteMouse)
     {
         // 临时版本，文件写死在代码里
         const wchar_t *audioList[] = {L"74", L"77", L"78", L"84"};
