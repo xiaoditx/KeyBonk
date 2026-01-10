@@ -13,7 +13,8 @@ extern HWND hwnd;                          // 主窗口句柄
 extern HWND hwndAbout;                     // "关于"窗口句柄
 extern HWND hwndSetting;                   // “设置”窗口句柄
 extern Gdiplus::Image *g_pBackgroundImage; // 背景图片
-extern bool Mute;                          // 是否静音
+extern bool Mute;                          // 键盘是否静音
+extern bool MuteMouse;                     // 鼠标是否静音
 extern bool WindowPenetrate;               // 窗口穿透
 extern NOTIFYICONDATA nid;                 // 任务栏通知区域图标状态
 extern bool minimum;                       // 当前最小化状态

@@ -70,6 +70,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         RemoveTrayIcon();
         Gdiplus::GdiplusShutdown(g_gdiplusToken); // 关闭GDI库
         CoUninitialize();                         // 关闭COM库
+        // 记录静音状态
+        WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), L"./config.ini");
+        WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), L"./config.ini");
+        // 退出
         PostQuitMessage(0);
         return 0;
 
@@ -159,6 +163,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         case IDM_MUTE: // 菜单-静音
             Mute = (!Mute);
             break;
+        case IDM_MUTE_MOUSE: // 菜单-静音
+            MuteMouse = (!MuteMouse);
+            break;
         case IDM_EXIT: // 菜单-退出
             PostMessage(hwnd, WM_CLOSE, 0, 0);
             break;
@@ -199,12 +206,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // 设置菜单项的初始选中状态
             UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
             UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
+            UINT uMuteMouseState = MuteMouse ? MF_CHECKED : MF_UNCHECKED;
             UINT uMinimumState = minimum ? MF_CHECKED : MF_UNCHECKED;
 
             CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE,
                           MF_BYCOMMAND | uWindowPenetrateState);
             CheckMenuItem(hSubMenu, IDM_MUTE,
                           MF_BYCOMMAND | uMuteState);
+            CheckMenuItem(hSubMenu, IDM_MUTE_MOUSE,
+                          MF_BYCOMMAND | uMuteMouseState);
             CheckMenuItem(hSubMenu, IDM_MINIMUM,
                           MF_BYCOMMAND | uMinimumState);
 

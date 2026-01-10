@@ -51,11 +51,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     // win-x和win-y 上次退出时的窗口位置
     int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, L"./config.ini");
     int windowPositionY = GetPrivateProfileInt(L"record", L"win-y", 100, L"./config.ini");
+    // 把上次退出记录的静音情况读到Mute和MuteMouse里
+    Mute = bool(GetPrivateProfileInt(L"record", L"mute", 0, L"./config.ini"));
+    MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, L"./config.ini"));
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
-    hrMain = CoInitializeEx(NULL,
-                            // 单元线程，禁用OLE1
-                            COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 
     if (FAILED(hrMain))
     {
