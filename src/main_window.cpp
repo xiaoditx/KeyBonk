@@ -19,6 +19,42 @@
 // 自定义消息
 #define WM_WINDOW_HAS_CREAT (WM_APP + 4) // 窗口以及创建，由后面打开的进程发送到当前窗口
 
+// 显示菜单
+void showMenu()
+{
+    HMENU hMenu = LoadMenu(C_hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
+    HMENU hSubMenu = GetSubMenu(hMenu, 0);
+
+    // 设置菜单项的初始选中状态
+    UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
+    UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
+    UINT uMuteMouseState = MuteMouse ? MF_CHECKED : MF_UNCHECKED;
+    UINT uMinimumState = minimum ? MF_CHECKED : MF_UNCHECKED;
+
+    CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE,
+                  MF_BYCOMMAND | uWindowPenetrateState);
+    CheckMenuItem(hSubMenu, IDM_MUTE,
+                  MF_BYCOMMAND | uMuteState);
+    CheckMenuItem(hSubMenu, IDM_MUTE_MOUSE,
+                  MF_BYCOMMAND | uMuteMouseState);
+    CheckMenuItem(hSubMenu, IDM_MINIMUM,
+                  MF_BYCOMMAND | uMinimumState);
+
+    POINT pt;
+    GetCursorPos(&pt); // 获取当前鼠标的屏幕坐标
+
+    // 确保窗口在前台，这样点击其他地方时会正确关闭菜单
+    SetForegroundWindow(hwnd);
+
+    // 显示右键菜单
+    TrackPopupMenu(hSubMenu,
+                   TPM_RIGHTBUTTON | TPM_LEFTALIGN,
+                   pt.x, pt.y, 0, hwnd, NULL);
+
+    PostMessage(hwnd, WM_NULL, 0, 0);
+
+    DestroyMenu(hMenu);
+}
 // 设置窗口穿透
 bool SetWindowMouseTransparent(HWND hWnd, bool enable)
 {
@@ -27,10 +63,19 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
 
     LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 
+    // 开启开始关闭
     if (enable)
+    {
         exStyle |= WS_EX_TRANSPARENT;
+        BYTE alpha = 153; // 255*0.6也就是60%不透明度
+        SetLayeredWindowAttributes(hwnd, 13217535, alpha, LWA_ALPHA | LWA_COLORKEY);
+    }
     else
+    {
         exStyle &= ~WS_EX_TRANSPARENT;
+        BYTE alpha = 255; // 100%不透明度
+        SetLayeredWindowAttributes(hwnd, 13217535, alpha, LWA_COLORKEY | LWA_ALPHA);
+    }
 
     SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
 
@@ -92,27 +137,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_RBUTTONDOWN:
     {
-        // 显示右键菜单
-        HMENU hMenu = LoadMenu(C_hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
-        HMENU hSubMenu = GetSubMenu(hMenu, 0);
-
-        // 设置菜单项的初始选中状态
-        UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
-        UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
-
-        CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE,
-                      MF_BYCOMMAND | uWindowPenetrateState);
-        CheckMenuItem(hSubMenu, IDM_MUTE,
-                      MF_BYCOMMAND | uMuteState);
-
-        POINT pt = {LOWORD(lParam), HIWORD(lParam)};
-        ClientToScreen(hwnd, &pt);
-
-        // 显示右键菜单
-        TrackPopupMenu(hSubMenu,
-                       TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-                       pt.x, pt.y, 0, hwnd, NULL);
-        DestroyMenu(hMenu);
+        showMenu();
         return 0;
     }
 
@@ -200,38 +225,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         if (lParam == WM_RBUTTONDOWN)
         {
             // 显示右键菜单
-            HMENU hMenu = LoadMenu(C_hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
-            HMENU hSubMenu = GetSubMenu(hMenu, 0);
-
-            // 设置菜单项的初始选中状态
-            UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
-            UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
-            UINT uMuteMouseState = MuteMouse ? MF_CHECKED : MF_UNCHECKED;
-            UINT uMinimumState = minimum ? MF_CHECKED : MF_UNCHECKED;
-
-            CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE,
-                          MF_BYCOMMAND | uWindowPenetrateState);
-            CheckMenuItem(hSubMenu, IDM_MUTE,
-                          MF_BYCOMMAND | uMuteState);
-            CheckMenuItem(hSubMenu, IDM_MUTE_MOUSE,
-                          MF_BYCOMMAND | uMuteMouseState);
-            CheckMenuItem(hSubMenu, IDM_MINIMUM,
-                          MF_BYCOMMAND | uMinimumState);
-
-            POINT pt;
-            GetCursorPos(&pt); // 获取当前鼠标的屏幕坐标
-
-            // 确保窗口在前台，这样点击其他地方时会正确关闭菜单
-            SetForegroundWindow(hwnd);
-
-            // 显示右键菜单
-            TrackPopupMenu(hSubMenu,
-                           TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-                           pt.x, pt.y, 0, hwnd, NULL);
-
-            PostMessage(hwnd, WM_NULL, 0, 0);
-
-            DestroyMenu(hMenu);
+            showMenu();
         }
         else if (lParam == WM_LBUTTONDBLCLK)
         {
