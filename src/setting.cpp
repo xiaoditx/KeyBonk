@@ -65,8 +65,39 @@ void settingWindowOpen()
 	// UpdateWindow(hwndAbout);
 }
 
+#define IDC_LABEL1 1008
+
 // 设置窗口消息处理
 LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	switch (uMsg)
+	{
+	case WM_CREATE: // 绘制图形界面
+	{
+		// 获取客户区大小
+		RECT rect;
+		GetClientRect(hwnd, &rect);
+		int clientWidth = rect.right - rect.left;					// 客户区宽度
+		[[maybe_unused]] int clientHeight = rect.bottom - rect.top; // 客户区高度
+
+		// 创建组件
+		// 标签1
+		CreateWindowExW(0, L"STATIC", L"选择的音频库：",
+						WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
+						130, 20, clientWidth - 150, 30,
+						hwnd, (HMENU)IDC_LABEL1, C_hInstance, NULL);
+
+		// 设置字体（微软雅黑，24号）
+		// 字体变量
+		HFONT hNormalFont = CreateFontW(24, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+										DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS,
+										CLEARTYPE_QUALITY, VARIABLE_PITCH, L"微软雅黑");
+		// 应用字体
+		SendMessageW(GetDlgItem(hwnd, IDC_LABEL1), WM_SETFONT, (WPARAM)hNormalFont, TRUE);
+		break;
+	}
+	default:
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+	return 0;
 }
