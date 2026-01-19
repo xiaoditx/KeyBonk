@@ -20,6 +20,7 @@ bool Mute = false;                         // 键盘是否静音
 bool MuteMouse = false;                    // 鼠标是否静音
 bool WindowPenetrate = false;              // 窗口穿透
 NOTIFYICONDATA nid = {};                   // 任务栏通知区域图标状态
+wchar_t audioLibPath[MAX_PATH];            // 音频库位置
 bool minimum = false;
 HINSTANCE C_hInstance = NULL;
 int C_nCmdShow;

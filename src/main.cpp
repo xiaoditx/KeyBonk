@@ -55,6 +55,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     Mute = bool(GetPrivateProfileInt(L"record", L"mute", 0, L"./config.ini"));
     MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, L"./config.ini"));
 
+    // 读取设置信息
+    GetPrivateProfileString(L"settings", L"lib", L"./bin/default/audio/", audioLibPath, MAX_PATH, L"./config.ini");
+
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 
