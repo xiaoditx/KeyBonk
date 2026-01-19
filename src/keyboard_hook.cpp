@@ -22,13 +22,14 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
         if ((wParam == WM_KEYDOWN /*|| wParam == WM_SYSKEYDOWN*/) and not Mute)
         {
             DWORD vkCode = keyInfo->vkCode;
-            wchar_t szPath[MAX_PATH];
-            swprintf_s(szPath,
-                       _countof(szPath),
-                       L"./resource/audios/%lu.wav", // 格式串
-                       vkCode);                      // 对应的数字
-            if (FileExists(szPath))
-                PlaySoundW(szPath, NULL, SND_FILENAME | SND_ASYNC);
+            wchar_t audioPath[MAX_PATH];
+            swprintf_s(audioPath,
+                       _countof(audioPath),
+                       L"%s%lu.wav", // 格式串
+                       audioLibPath, // 音频库位置
+                       vkCode);      // 对应的数字
+            if (FileExists(audioPath))
+                PlaySoundW(audioPath, NULL, SND_FILENAME | SND_ASYNC);
         }
     }
     // 按照规定需要将事件传递给下一个钩子或系统
@@ -49,7 +50,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 
         // 拼成完整路径
         wchar_t path[256];
-        swprintf(path, 256, L"./resource/audios/%ls.wav", name);
+        swprintf(path, 256, L"%s%ls.wav", audioLibPath, name);
         // MessageBoxW(hwnd, L"HELLO", path, MB_OK);
         PlaySoundW(path, NULL, SND_FILENAME | SND_ASYNC);
     }
