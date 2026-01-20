@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
-        "keybonk"
+        "Distil",
+        "gguf",
+        "keybonk",
+        "Qwen",
+        "RLHF"
     ],
     "files.associations": {
         "format": "cpp",
