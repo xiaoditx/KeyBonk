@@ -2,12 +2,13 @@
 ; 有关创建 Inno Setup 脚本文件的详细资料请查阅帮助文档！
 
 #define MyAppName "发声键盘-KeyBonk"
-#define MyAppVersion "1.2.2.0"
+#define MyAppVersion "1.2.2.1"
 #define MyAppPublisher "小狄同学呀"
 #define MyAppURL "https://xiaoditx.github.io/"
 #define MyAppExeName "KeyBonk.exe"
 #define MyAppArch "64"
 #define MyAppArchStr "x64"
+#define DefaultAudioLib "bin\default"
 
 [Setup]
 ; 注: AppId的值为单独标识该应用程序。
@@ -44,9 +45,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: ".\build\{#MyAppArch}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: ".\resource\audios\*"; DestDir: "{app}\resource\audios"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: ".\resource\background.png"; DestDir: "{app}\resource"; Flags: ignoreversion
-Source: ".\resource\icon-org.png"; DestDir: "{app}\resource"; Flags: ignoreversion
+Source: ".\resource\audios\*"; DestDir: "{app}\{#DefaultAudioLib}\audios"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: ".\resource\background.png"; DestDir: "{app}\{#DefaultAudioLib}"; Flags: ignoreversion
+Source: ".\resource\icon-org.png"; DestDir: "{app}\{#DefaultAudioLib}"; Flags: ignoreversion
 ; 注意: 不要在任何共享系统文件上使用"Flags: ignoreversion"
 
 [Icons]
