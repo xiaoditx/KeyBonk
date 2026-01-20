@@ -56,7 +56,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, L"./config.ini"));
 
     // 读取设置信息
-    GetPrivateProfileString(L"settings", L"lib", L"./bin/default/audio/", audioLibPath, MAX_PATH, L"./config.ini");
+    GetPrivateProfileString(L"settings", L"lib", L"./bin/default", audioLibPath, MAX_PATH, L"./config.ini");
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -121,15 +121,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         return 0;
     }
 
-    if (!FileExists(L"./resource/background.png"))
+    // 加载背景图片
+    wchar_t imgPath[MAX_PATH];
+    swprintf(imgPath, _countof(imgPath), L"%ls/background.png", audioLibPath);
+    if (FileExists(imgPath))
+    {
+        g_pBackgroundImage = new Gdiplus::Image(imgPath);
+    }
+    else
     {
         MessageBoxExW(
-            NULL, L"错误：00004，找不到背景图片，请检查文件夹完整性",
+            NULL, L"错误：00004，当前声音库找不到背景图片，请检查文件夹完整性",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         return 0;
     }
-    // 加载背景图片
-    g_pBackgroundImage = new Gdiplus::Image(L"./resource/background.png");
 
     // 安装钩子
     HHOOK KeyboardHook = NULL; // 钩子句柄
