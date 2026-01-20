@@ -42,7 +42,7 @@ RES_OBJ  := $(OBJ_DIR)/rc/resources.o
 all: $(BIN)
 
 # 链接 
-$(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)\resource
+$(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)\bin\default
 	@echo Linking ...
 	@$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
@@ -69,18 +69,18 @@ $(OBJ_DIR)\rc:
 	@if not exist "$(OBJ_DIR)\rc" mkdir "$(OBJ_DIR)\rc"
 
 # 资源文件复制
-$(BUILD_DIR)\resource:
-	@echo Copy resources to "$(BUILD_DIR)\resource":
-	@if not exist "$(BUILD_DIR)\resource" mkdir "$(BUILD_DIR)\resource"
+$(BUILD_DIR)\bin\default:
+	@echo Copy resources to "$@":
+	@if not exist "$@" mkdir "$@"
 	
-	@echo == Copy "resource\audios" to "$(BUILD_DIR)\resource\audios\"
-	@xcopy /E /Y "resource\audios" "$(BUILD_DIR)\resource\audios\\" >nul
+	@echo == Copy "resource\audios" to "$@\audios\"
+	@xcopy /E /Y "resource\audios" "$@\audios\\" >nul
 	
-	@echo == Copy "resource\background.png" to "$(BUILD_DIR)\resource\"
-	@xcopy /Y "resource\background.png" "$(BUILD_DIR)\resource\\" >nul
+	@echo == Copy "resource\background.png" to "$@"
+	@xcopy /Y "resource\background.png" "$@" >nul
 
-	@echo == Copy "resource\icon-org.png" to "$(BUILD_DIR)\resource\"
-	@xcopy /Y "resource\icon-org.png" "$(BUILD_DIR)\resource\\" >nul
+	@echo == Copy "resource\icon-org.png" to "$@"
+	@xcopy /Y "resource\icon-org.png" "$@" >nul
 	
 	@echo Resources copy was done
 
