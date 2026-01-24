@@ -56,7 +56,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, L"./config.ini"));
 
     // 读取设置信息
-    GetPrivateProfileString(L"settings", L"lib", L"./bin/default", audioLibPath, MAX_PATH, L"./config.ini");
+    GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", audioLibPath, MAX_PATH, L"./config.ini");
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -122,8 +122,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
 
     // 加载背景图片
-    wchar_t imgPath[MAX_PATH];
-    swprintf(imgPath, _countof(imgPath), L"%ls/background.png", audioLibPath);
+    wchar_t *imgPath = new wchar_t[MAX_PATH]{};
+    wchar_t *exePath = new wchar_t[MAX_PATH]{};
+    GetExeDirectory(exePath, MAX_PATH);
+    swprintf(imgPath, MAX_PATH, L"%ls\\%ls\\background.png", exePath, audioLibPath);
+    delete[] exePath;
     if (FileExists(imgPath))
     {
         g_pBackgroundImage = new Gdiplus::Image(imgPath);
@@ -135,6 +138,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         return 0;
     }
+    delete[] imgPath;
 
     // 安装钩子
     HHOOK KeyboardHook = NULL; // 钩子句柄
@@ -172,6 +176,5 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-
     return 0;
 }
