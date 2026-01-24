@@ -13,6 +13,23 @@
 #include "../include/keyboard_hook.hpp"
 #include "../include/utils.hpp"
 
+// 播放音频文件的通用函数
+void PlayAudioFile(const wchar_t *fileName)
+{
+    wchar_t audioPath[MAX_PATH]{};
+    swprintf_s(audioPath,
+               MAX_PATH,
+               L"%ls\\audios\\%ls.wav", // 格式串
+               audioLibPath,            // 音频库位置
+               fileName);               // 文件名
+    wchar_t *fullPath = new wchar_t[MAX_PATH]{};
+    GetExeRelativePath(audioPath, fullPath, MAX_PATH);
+
+    if (FileExists(fullPath))
+        PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
+    delete[] fullPath;
+}
+
 // 低级键盘钩子的回调函数
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -23,18 +40,9 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
         if ((wParam == WM_KEYDOWN /*|| wParam == WM_SYSKEYDOWN*/) and not Mute)
         {
             DWORD vkCode = keyInfo->vkCode;
-            wchar_t audioPath[MAX_PATH]{};
-            swprintf_s(audioPath,
-                       MAX_PATH,
-                       L"%ls\\audios\\%lu.wav", // 格式串
-                       audioLibPath,            // 音频库位置
-                       vkCode);                 // 对应的数字
-            wchar_t *fullPath = new wchar_t[MAX_PATH]{};
-            GetExeRelativePath(audioPath, fullPath, MAX_PATH);
-
-            if (FileExists(fullPath))
-                PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
-            delete[] fullPath;
+            wchar_t fileName[MAX_PATH]{};
+            swprintf_s(fileName, MAX_PATH, L"%lu", vkCode);
+            PlayAudioFile(fileName);
         }
     }
     // 按照规定需要将事件传递给下一个钩子或系统
@@ -52,15 +60,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 
         // 随机挑一个音频播放
         const wchar_t *name = audioList[random::getInt(0, audioFileNumber - 1)];
-
-        // 拼成完整路径
-        wchar_t path[256];
-        swprintf(path, 256, L"%ls\\audios\\%ls.wav", audioLibPath, name);
-        wchar_t *fullPath = new wchar_t[MAX_PATH]{};
-        GetExeRelativePath(path, fullPath, MAX_PATH);
-        if (FileExists(fullPath))
-            PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
-        delete[] fullPath;
+        PlayAudioFile(name);
     }
     // 按照规定需要将事件传递给下一个钩子或系统
     return CallNextHookEx(NULL, nCode, wParam, lParam);

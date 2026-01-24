@@ -23,5 +23,7 @@ NOTIFYICONDATA nid = {};                   // 任务栏通知区域图标状态
 wchar_t audioLibPath[MAX_PATH];            // 音频库位置
 bool minimum = false;
 HINSTANCE C_hInstance = NULL;
+HHOOK KeyboardHook = NULL; // 钩子句柄
+HHOOK MouseHook = NULL;    // 钩子句柄
 int C_nCmdShow;
 HRESULT hrMain; // 接受Windows函数的返回结果
