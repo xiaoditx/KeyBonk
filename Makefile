@@ -93,3 +93,8 @@ clean:
 # 帮助 
 help:
 	@echo 可用目标: all clean help
+
+.PHONY: run
+run: $(BIN)
+	@echo [RUN] Running $(BIN)
+	@$(BIN)
