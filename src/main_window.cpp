@@ -115,6 +115,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         RemoveTrayIcon();
         Gdiplus::GdiplusShutdown(g_gdiplusToken); // 关闭GDI库
         CoUninitialize();                         // 关闭COM库
+        UnhookWindowsHookEx(KeyboardHook);            // 卸载键盘钩子
+        UnhookWindowsHookEx(MouseHook);            // 卸载鼠标钩子
         // 记录静音状态
         WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), L"./config.ini");
         WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), L"./config.ini");
@@ -131,7 +133,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         // 额外确保激活（某些系统需要）
         SetActiveWindow(hwnd);
         SetFocus(hwnd);
-        // FlashWindow(hwnd, TRUE); // 我又没有任务栏图标和标题栏我写这玩意干啥？啧啧
         return 0;
     }
 

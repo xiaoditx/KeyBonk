@@ -100,6 +100,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        CoUninitialize();
         return 0;
     }
 
@@ -118,6 +119,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00003，初始化GDI+库时发生异常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        CoUninitialize();
         return 0;
     }
 
@@ -136,12 +138,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00004，当前声音库找不到背景图片，请检查文件夹完整性",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        delete[] imgPath;
+        Gdiplus::GdiplusShutdown(g_gdiplusToken);
+        CoUninitialize();
         return 0;
     }
     delete[] imgPath;
 
-    // 安装钩子
-    HHOOK KeyboardHook = NULL; // 钩子句柄
+    // 安装键盘钩子
     KeyboardHook = SetWindowsHookExW(
         WH_KEYBOARD_LL, // 低级键盘钩子
         // 似乎也能用WH_KEYBOARD，但低级钩子用起来更稳定、简单些
@@ -153,10 +157,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        // 释放已分配的资源
+        if (g_pBackgroundImage)
+        {
+            delete g_pBackgroundImage;
+            g_pBackgroundImage = NULL;
+        }
+        Gdiplus::GdiplusShutdown(g_gdiplusToken);
+        CoUninitialize();
+        return 0;
     }
 
     // 鼠标钩子
-    HHOOK MouseHook = NULL; // 钩子句柄
     MouseHook = SetWindowsHookExW(
         WH_MOUSE_LL,       // 低级鼠标钩子
         LowLevelMouseProc, // 传递回调函数地址
@@ -167,6 +179,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        // 释放已分配的资源
+        UnhookWindowsHookEx(KeyboardHook);
+        KeyboardHook = NULL;
+        if (g_pBackgroundImage)
+        {
+            delete g_pBackgroundImage;
+            g_pBackgroundImage = NULL;
+        }
+        Gdiplus::GdiplusShutdown(g_gdiplusToken);
+        CoUninitialize();
+        return 0;
     }
 
     // 消息循环
@@ -176,5 +199,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    // 释放钩子资源
+    if (KeyboardHook != NULL)
+    {
+        UnhookWindowsHookEx(KeyboardHook);
+        KeyboardHook = NULL;
+    }
+    if (MouseHook != NULL)
+    {
+        UnhookWindowsHookEx(MouseHook);
+        MouseHook = NULL;
+    }
+
+    // 释放背景图片
+    if (g_pBackgroundImage)
+    {
+        delete g_pBackgroundImage;
+        g_pBackgroundImage = NULL;
+    }
+
+    // 关闭GDI+和COM库
+    Gdiplus::GdiplusShutdown(g_gdiplusToken);
+    CoUninitialize();
+
     return 0;
 }

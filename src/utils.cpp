@@ -204,6 +204,6 @@ void safeRelease(T **resourcePointer)
         // 释放资源
         (*resourcePointer)->Release();
         // 设置为空
-        resourcePointer = NULL;
+        *resourcePointer = NULL;
     }
 }

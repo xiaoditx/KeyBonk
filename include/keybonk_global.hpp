@@ -19,6 +19,8 @@ extern bool WindowPenetrate;               // 窗口穿透
 extern NOTIFYICONDATA nid;                 // 任务栏通知区域图标状态
 extern bool minimum;                       // 当前最小化状态
 extern wchar_t audioLibPath[MAX_PATH];     // 音频库位置
+extern HHOOK KeyboardHook; // 钩子句柄
+extern HHOOK MouseHook; // 钩子句柄
 extern HINSTANCE C_hInstance;
 extern int C_nCmdShow;
 extern HRESULT hrMain; // 接受Windows函数的返回结果
