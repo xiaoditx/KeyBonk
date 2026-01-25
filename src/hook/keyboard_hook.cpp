@@ -10,8 +10,11 @@
 #include <mmsystem.h>
 #include <wchar.h>
 #include "debug.hpp"
-#include "../include/keyboard_hook.hpp"
-#include "../include/utils.hpp"
+#include "hook/mouse_hook.hpp"
+#include "hook/keyboard_hook.hpp"
+#include "functions/files.hpp"
+#include "functions/randnum.hpp"
+#include "../include/global.hpp"
 
 // 播放音频文件的通用函数
 void PlayAudioFile(const wchar_t *fileName)
@@ -27,6 +30,7 @@ void PlayAudioFile(const wchar_t *fileName)
 
     if (FileExists(fullPath))
         PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
+
     delete[] fullPath;
 }
 

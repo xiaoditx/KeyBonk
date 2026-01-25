@@ -10,8 +10,8 @@
 #include <shellapi.h>
 #include <winver.h>
 #include <string>
-#include "../include/about.hpp"
-#include "../include/keybonk_global.hpp"
+#include "windows/about.hpp"
+#include "global.hpp"
 #include "../resource/resources.hpp"
 
 // 打开“关于”窗口

@@ -5,8 +5,8 @@
 #define WINDOW_MANAGER_H
 
 // 包含所有窗口的头文件
-#include "main_window.hpp"
-#include "setting.hpp"
-#include "about.hpp"
+#include "windows/main_window.hpp"
+#include "windows/setting.hpp"
+#include "windows/about.hpp"
 
 #endif // WINDOW_MANAGER_H

@@ -6,10 +6,10 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include "keybonk_global.hpp"
+#include "global.hpp"
 
 // 函数声明
-void aboutWindowOpen(); // 打开关于窗口
+void aboutWindowOpen();                                                                // 打开关于窗口
 LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam); // 关于窗口消息处理
 
 #endif // ABOUT_H
