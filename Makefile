@@ -30,7 +30,7 @@ OBJ_DIR   := $(BUILD_DIR)/obj
 BIN       := $(BUILD_DIR)/KeyBonk.exe
 
 # 源文件列表 
-CXX_SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+CXX_SRCS := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/windows/*.cpp) $(wildcard $(SRC_DIR)/hook/*.cpp) $(wildcard $(SRC_DIR)/functions/*.cpp)
 RES_SRC  := $(RES_DIR)/resources.rc
 
 # 自动推导对象 
@@ -49,6 +49,7 @@ $(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)\bin\default
 # 编译对象文件 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@echo Compile $< into $@
+	@if not exist "$(dir $@)" mkdir "$(dir $@)"
 	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -MMD -MP -c $< -o $@
 
 # 资源文件 

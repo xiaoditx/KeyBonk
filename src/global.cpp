@@ -8,7 +8,7 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include "../include/keybonk_global.hpp"
+#include "../include/global.hpp"
 
 // 全局变量定义
 ULONG_PTR g_gdiplusToken = 0;              // GDI+的token

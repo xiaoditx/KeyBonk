@@ -1,8 +1,8 @@
-// ===./include/keybonk_global.h===
+// ===./include/global.hpp===
 // 全局变量和共享定义
 
-#ifndef KEYBONK_GLOBAL_H
-#define KEYBONK_GLOBAL_H
+#ifndef GLOBAL_H
+#define GLOBAL_H
 
 #include <windows.h>
 #include <gdiplus.h>
@@ -25,4 +25,4 @@ extern HINSTANCE C_hInstance;
 extern int C_nCmdShow;
 extern HRESULT hrMain; // 接受Windows函数的返回结果
 
-#endif // KEYBONK_GLOBAL_H
+#endif // GLOBAL_H

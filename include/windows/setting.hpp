@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include "keybonk_global.hpp"
+#include "global.hpp"
 
 // 函数声明
 void settingWindowOpen();                                                                // 打开设置窗口

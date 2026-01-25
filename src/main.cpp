@@ -11,10 +11,10 @@
 #include <gdiplus.h>
 #include <shellapi.h>
 
-#include "../include/keybonk_global.hpp"
+#include "../include/global.hpp"
 #include "../include/window_manager.hpp"
-#include "../include/keyboard_hook.hpp"
-#include "../include/utils.hpp"
+#include "../include/hook/keyboard_hook.hpp"
+#include "../include/functions/files.hpp"
 #include "../resource/resources.hpp"
 
 // 自定义消息

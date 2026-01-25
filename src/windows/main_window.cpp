@@ -10,10 +10,10 @@
 #include <shellapi.h>
 #include <winver.h>
 #include <string>
-#include "../include/main_window.hpp"
-#include "../include/about.hpp"
-#include "../include/setting.hpp"
-#include "../include/keybonk_global.hpp"
+#include "windows/main_window.hpp"
+#include "windows/about.hpp"
+#include "windows/setting.hpp"
+#include "global.hpp"
 #include "../resource/resources.hpp"
 
 // 自定义消息
@@ -115,8 +115,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         RemoveTrayIcon();
         Gdiplus::GdiplusShutdown(g_gdiplusToken); // 关闭GDI库
         CoUninitialize();                         // 关闭COM库
-        UnhookWindowsHookEx(KeyboardHook);            // 卸载键盘钩子
-        UnhookWindowsHookEx(MouseHook);            // 卸载鼠标钩子
+        UnhookWindowsHookEx(KeyboardHook);        // 卸载键盘钩子
+        UnhookWindowsHookEx(MouseHook);           // 卸载鼠标钩子
         // 记录静音状态
         WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), L"./config.ini");
         WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), L"./config.ini");
