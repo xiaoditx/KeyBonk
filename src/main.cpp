@@ -10,8 +10,10 @@
 #include <windows.h>
 #include <gdiplus.h>
 #include <shellapi.h>
+#include <string>
 
 #include "global.hpp"
+#include "debug.hpp"
 #include "window_manager.hpp"
 #include "hook/keyboard_hook.hpp"
 #include "functions/files.hpp"
@@ -40,6 +42,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     if (IsInstanceAlreadyRunning(L"KeyBonk主窗口", L"KeyBonk主窗口"))
     {
+        debug::logOutput(L"===检查到KeyBonk主窗口重复创建,软件退出===");
+        debug::logOutputWithoutEndl(L"退出信息：\nhInstance:");
+        debug::logOutputWithoutEndl(std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str());
+        debug::logOutput(L"\n===============================");
         return 0;
     }
 
@@ -48,21 +54,27 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     C_nCmdShow = nCmdShow;
 
     // 读取配置项文件中的record（上次退出时记录）部分
+    // 格式化出ini文件的完整路径
+    wchar_t *fullIniFilePath = new wchar_t[MAX_PATH]{};
+    GetExeRelativePath(L"./config.ini", fullIniFilePath, MAX_PATH);
     // win-x和win-y 上次退出时的窗口位置
-    int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, L"./config.ini");
-    int windowPositionY = GetPrivateProfileInt(L"record", L"win-y", 100, L"./config.ini");
+    int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, fullIniFilePath);
+    int windowPositionY = GetPrivateProfileInt(L"record", L"win-y", 100, fullIniFilePath);
     // 把上次退出记录的静音情况读到Mute和MuteMouse里
-    Mute = bool(GetPrivateProfileInt(L"record", L"mute", 0, L"./config.ini"));
-    MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, L"./config.ini"));
+    Mute = bool(GetPrivateProfileInt(L"record", L"mute", 0, fullIniFilePath));
+    MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, fullIniFilePath));
 
     // 读取设置信息
-    GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", audioLibPath, MAX_PATH, L"./config.ini");
+    GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", audioLibPath, MAX_PATH, fullIniFilePath);
+
+    delete[] fullIniFilePath;
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 
     if (FAILED(hrMain))
     {
+        debug::logOutput(L"[初始化]初始化COM库异常");
         MessageBoxExW(
             NULL, L"错误：00001，初始化COM库时发生异常，请检查系统相关文件是否完好",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -97,6 +109,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     // 创建失败则提示并返回，结束运行
     if (hwnd == NULL)
     {
+        debug::logOutput(L"[初始化]主窗口创建异常");
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -116,6 +129,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     GDIpStatus = Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, NULL);
     if (GDIpStatus != Gdiplus::Ok)
     { // 如果存在问题
+        debug::logOutput(L"[初始化]GDI+初始化异常");
         MessageBoxExW(
             NULL, L"错误：00003，初始化GDI+库时发生异常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -135,6 +149,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
     else
     {
+        debug::logOutput(L"[初始化]找不到背景图片");
         MessageBoxExW(
             NULL, L"错误：00004，当前声音库找不到背景图片，请检查文件夹完整性",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -154,6 +169,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         0);
     if (KeyboardHook == NULL)
     { // 没拿到句柄则失败
+        debug::logOutput(L"[初始化]键盘钩子安装失败");
         MessageBoxExW(
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -176,6 +192,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         0);
     if (MouseHook == NULL)
     { // 没拿到句柄则失败
+        debug::logOutput(L"[初始化]鼠标钩子安装失败");
         MessageBoxExW(
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
