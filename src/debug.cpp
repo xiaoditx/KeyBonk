@@ -1,4 +1,4 @@
-#include "../include/debug.hpp"
+#include "debug.hpp"
 #include <fstream>
 #include <codecvt>
 #include <locale>
