@@ -14,7 +14,7 @@
 #include "hook/keyboard_hook.hpp"
 #include "functions/files.hpp"
 #include "functions/randnum.hpp"
-#include "../include/global.hpp"
+#include "global.hpp"
 
 // 播放音频文件的通用函数
 void PlayAudioFile(const wchar_t *fileName)
