@@ -29,7 +29,11 @@ void PlayAudioFile(const wchar_t *fileName)
     GetExeRelativePath(audioPath, fullPath, MAX_PATH);
 
     if (FileExists(fullPath))
+    {
+        debug::logOutputWithoutEndl(L"[功能]播放了音频");
+        debug::logOutput(fullPath);
         PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
+    }
 
     delete[] fullPath;
 }
