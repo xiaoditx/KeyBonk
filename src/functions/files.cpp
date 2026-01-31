@@ -75,7 +75,7 @@ bool GetExeRelativePath(const wchar_t *rawPath, wchar_t *outBuffer, size_t buffe
         return false;
     }
 
-    // 检查是否是绝对路径
+    // 检查是否是一下情况的一种：UNC路径、根相对路径、绝对路径
     if (rawPath[0] == L'\\' || rawPath[0] == L'/' ||
         (rawPath[1] == L':' && (rawPath[2] == L'\\' || rawPath[2] == L'/')))
     {
