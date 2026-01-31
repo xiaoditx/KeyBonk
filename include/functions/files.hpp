@@ -4,6 +4,7 @@
 #include <wchar.h>
 
 // 各种文件路径处理函数
+
 /**
  * @brief 获取当前可执行程序的文件路径
  *
@@ -13,6 +14,7 @@
  * @return 当缓冲区足够时，返回True，不足时，返回False；缓冲区指针为nullptr时也返回False
  */
 bool GetExePath(wchar_t *outBuffer, size_t bufferSize);
+
 /**
  * @brief 获取当前可执行程序的文件目录也就是不包含文件名的路径
  *
@@ -22,6 +24,7 @@ bool GetExePath(wchar_t *outBuffer, size_t bufferSize);
  * @return 当缓冲区足够时，返回True，不足时，返回False；缓冲区指针为nullptr时也返回False
  */
 bool GetExeDirectory(wchar_t *outBuffer, size_t bufferSize);
+
 /**
  * @brief 将相对路径转换为以调用该函数的可执行程序的文件所在路径为基础的绝对路径
  *
@@ -34,6 +37,7 @@ bool GetExeDirectory(wchar_t *outBuffer, size_t bufferSize);
  * @note 如果rawPath本来就是绝对路径、UNC路径或根相对路径的其中一种，则函数直接复制rawPath的内容到outBuffer
  */
 bool GetExeRelativePath(const wchar_t *rawPath, wchar_t *outBuffer, size_t bufferSize);
+
 /**
  * @brief 检查指定的文件是否存在
  *
