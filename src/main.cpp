@@ -117,12 +117,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         return 0;
     }
 
-    // 设置透明，这个版本颜色先写死在代码里
-    COLORREF crKey = 13217535; // 偏粉红色的颜色
-    SetLayeredWindowAttributes(hwnd, crKey, 0, LWA_COLORKEY);
-
-    ShowWindow(hwnd, nCmdShow); // 展示窗口
-
     // 初始化GDI+
     Gdiplus::GpStatus GDIpStatus; // 接收GDI+库的状态（错误码）
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -143,9 +137,19 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     GetExeDirectory(exePath, MAX_PATH);
     swprintf(imgPath, MAX_PATH, L"%ls\\%ls\\background.png", exePath, audioLibPath);
     delete[] exePath;
+    Gdiplus::Bitmap *pBitmap;
     if (FileExists(imgPath))
     {
         g_pBackgroundImage = new Gdiplus::Image(imgPath);
+        pBitmap = Gdiplus::Bitmap::FromFile(imgPath);
+        if (!pBitmap || pBitmap->GetLastStatus() != Gdiplus::GpStatus::Ok)
+        {
+            // 图片加载失败，创建红色矩形作为替代
+            pBitmap = new Gdiplus::Bitmap(160, 180);
+            Gdiplus::Graphics g(pBitmap);
+            Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 0, 0));
+            g.FillRectangle(&brush, 0, 0, 160, 180);
+        }
     }
     else
     {
@@ -159,6 +163,33 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         return 0;
     }
     delete[] imgPath;
+
+    HBITMAP hBmp;
+    pBitmap->Gdiplus::Bitmap::GetHBITMAP(Gdiplus::Color(0, 0, 0, 0), &hBmp); // 透明背景
+
+    // 创建内存DC
+    HDC hdcScreen = GetDC(hwnd);
+    HDC memDC = CreateCompatibleDC(hdcScreen);
+    HBITMAP hOldBmp = (HBITMAP)SelectObject(memDC, hBmp);
+
+    // 获取图片尺寸
+    BITMAP bm;
+    GetObject(hBmp, sizeof(BITMAP), &bm);
+    SIZE size = {bm.bmWidth, bm.bmHeight};
+
+    // 使用UpdateLayeredWindow
+    POINT ptSrc = {0, 0};
+    BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+    UpdateLayeredWindow(hwnd, hdcScreen, NULL, &size, memDC, &ptSrc, 0, &bf, ULW_ALPHA);
+
+    // 清理
+    SelectObject(memDC, hOldBmp);
+    DeleteDC(memDC);
+    ReleaseDC(hwnd, hdcScreen);
+    DeleteObject(hBmp);
+
+    ShowWindow(hwnd, nCmdShow);
+    UpdateWindow(hwnd);
 
     // 安装键盘钩子
     KeyboardHook = SetWindowsHookExW(
@@ -239,6 +270,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     // 关闭GDI+和COM库
     Gdiplus::GdiplusShutdown(g_gdiplusToken);
     CoUninitialize();
+    delete pBitmap;
 
     return 0;
 }
