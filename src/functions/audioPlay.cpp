@@ -18,8 +18,10 @@ void PlayAudioFile(const wchar_t *fileName)
 
     if (FileExists(fullPath))
     {
+#if development
         debug::logOutputWithoutEndl(L"[功能]播放了音频");
         debug::logOutput(fullPath);
+#endif
         PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
     }
 

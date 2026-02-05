@@ -8,7 +8,6 @@
 
 #include <windows.h>
 #include <wchar.h>
-// #include <mmsystem.h>
 #include "debug.hpp"
 #include "hook/keyboard_hook.hpp"
 #include "global.hpp"
