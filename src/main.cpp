@@ -80,6 +80,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         return 0;
     }
+    comInitialized = true;
 
     // 注册窗口类
     const wchar_t CLASS_NAME[] = L"KeyBonk主窗口";
@@ -113,7 +114,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
-        CoUninitialize();
+        releaseGlobalResources();
         return 0;
     }
 
@@ -127,7 +128,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MessageBoxExW(
             NULL, L"错误：00003，初始化GDI+库时发生异常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
-        CoUninitialize();
+        releaseGlobalResources();
         return 0;
     }
 
@@ -201,8 +202,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         // 释放已分配的资源
-        Gdiplus::GdiplusShutdown(g_gdiplusToken);
-        CoUninitialize();
+        releaseGlobalResources();
         return 0;
     }
 
@@ -219,10 +219,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         // 释放已分配的资源
-        UnhookWindowsHookEx(KeyboardHook);
-        KeyboardHook = NULL;
-        Gdiplus::GdiplusShutdown(g_gdiplusToken);
-        CoUninitialize();
+        releaseGlobalResources();
         return 0;
     }
 
@@ -233,26 +230,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-
-    // 释放钩子资源
-    if (KeyboardHook != NULL)
-    {
-        UnhookWindowsHookEx(KeyboardHook);
-        KeyboardHook = NULL;
-    }
-    if (MouseHook != NULL)
-    {
-        UnhookWindowsHookEx(MouseHook);
-        MouseHook = NULL;
-    }
-
-    // 关闭GDI+和COM库
-    Gdiplus::GdiplusShutdown(g_gdiplusToken);
-    CoUninitialize();
-    // 清理DC和位图
-    SelectObject(memDC, hOldBmp); // 选出自定义位图
-    DeleteDC(memDC);
-    ReleaseDC(hwnd, hdcScreen);
-    DeleteObject(hBmp);
+    releaseGlobalResources();
     return 0;
 }
