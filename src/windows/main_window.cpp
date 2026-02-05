@@ -114,10 +114,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_DESTROY:
         RemoveTrayIcon();
-        Gdiplus::GdiplusShutdown(g_gdiplusToken); // 关闭GDI库
-        CoUninitialize();                         // 关闭COM库
-        UnhookWindowsHookEx(KeyboardHook);        // 卸载键盘钩子
-        UnhookWindowsHookEx(MouseHook);           // 卸载鼠标钩子
         // 记录静音状态
         WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), L"./config.ini");
         WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), L"./config.ini");

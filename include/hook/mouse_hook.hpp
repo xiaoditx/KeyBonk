@@ -1,12 +1,8 @@
-#pragma once
+#ifndef MOUSE_HOOK_HPP
+#define MOUSE_HOOK_HPP
 
 #include <Windows.h>
 
-// 鼠标钩子回调函数类型
-typedef LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam);
 
-// 安装鼠标钩子
-HHOOK InstallMouseHook(MouseHookProc* hookProc);
-
-// 卸载鼠标钩子
-BOOL UninstallMouseHook(HHOOK hHook);
+#endif // MOUSE_HOOK_HPP

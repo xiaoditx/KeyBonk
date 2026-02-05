@@ -16,6 +16,7 @@
 #include "debug.hpp"
 #include "window_manager.hpp"
 #include "hook/keyboard_hook.hpp"
+#include "hook/mouse_hook.hpp"
 #include "functions/files.hpp"
 #include "../resource/resources.hpp"
 
@@ -136,7 +137,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     wchar_t *imgPath = new wchar_t[MAX_PATH]{};
     wchar_t *exePath = new wchar_t[MAX_PATH]{};
     GetExeDirectory(exePath, MAX_PATH);
-    swprintf(imgPath, MAX_PATH, L"%ls\\%ls\\background.png", exePath, audioLibPath);
+    swprintf_s(imgPath, MAX_PATH, L"%ls\\%ls\\background.png", exePath, audioLibPath);
     delete[] exePath;
     Gdiplus::Bitmap *pBitmap;
     if (FileExists(imgPath))
@@ -158,8 +159,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             NULL, L"错误：00004，当前声音库找不到背景图片，请检查文件夹完整性",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         delete[] imgPath;
-        Gdiplus::GdiplusShutdown(g_gdiplusToken);
-        CoUninitialize();
+        releaseGlobalResources();
         return 0;
     }
     delete[] imgPath;
