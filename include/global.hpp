@@ -8,6 +8,7 @@
 
 // 全局变量声明
 extern ULONG_PTR g_gdiplusToken;       // GDI+的token
+extern bool comInitialized;            // COM库是否初始化成功
 extern HWND hwnd;                      // 主窗口句柄
 extern HWND hwndAbout;                 // "关于"窗口句柄
 extern HWND hwndSetting;               // “设置”窗口句柄
@@ -27,4 +28,8 @@ extern HINSTANCE C_hInstance;
 extern int C_nCmdShow;
 extern HRESULT hrMain; // 接受Windows函数的返回结果
 
+/**
+ * @brief 统一释放需要释放的全局资源
+ */
+void releaseGlobalResources();
 #endif // GLOBAL_H

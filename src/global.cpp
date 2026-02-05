@@ -8,9 +8,11 @@
 
 #include <windows.h>
 #include "global.hpp"
+#include <gdiplus.h>
 
 // 全局变量定义
 ULONG_PTR g_gdiplusToken = 0;   // GDI+的token
+bool comInitialized = false;    // COM库是否初始化成功
 HWND hwnd = NULL;               // 主窗口句柄
 HWND hwndAbout = NULL;          // "关于"窗口句柄
 HWND hwndSetting = NULL;        // “设置”窗口句柄
@@ -20,12 +22,57 @@ bool WindowPenetrate = false;   // 窗口穿透
 NOTIFYICONDATA nid = {};        // 任务栏通知区域图标状态
 wchar_t audioLibPath[MAX_PATH]; // 音频库位置
 bool minimum = false;
-HINSTANCE C_hInstance = NULL;
-HHOOK KeyboardHook = NULL; // 钩子句柄
-HHOOK MouseHook = NULL;    // 钩子句柄
-HBITMAP hBmp;              // 存储背景图片的位图
-HDC hdcScreen;             // 主窗口屏幕DC
-HDC memDC;                 // 主窗口内存DC
-HBITMAP hOldBmp;           // 主窗口内存DC默认位图
+HINSTANCE C_hInstance = nullptr;
+HHOOK KeyboardHook = nullptr; // 钩子句柄
+HHOOK MouseHook = NULL;       // 钩子句柄
+HBITMAP hBmp = nullptr;       // 存储背景图片的位图
+HDC hdcScreen = nullptr;      // 主窗口屏幕DC
+HDC memDC = nullptr;          // 主窗口内存DC
+HBITMAP hOldBmp = nullptr;    // 主窗口内存DC默认位图
 int C_nCmdShow;
 HRESULT hrMain; // 接受Windows函数的返回结果
+
+// 全局资源释放
+void releaseGlobalResources()
+{
+    // 释放钩子资源
+    if (KeyboardHook != NULL)
+    {
+        UnhookWindowsHookEx(KeyboardHook);
+        KeyboardHook = NULL;
+    }
+    if (MouseHook != NULL)
+    {
+        UnhookWindowsHookEx(MouseHook);
+        MouseHook = NULL;
+    }
+    // 关闭GDI+和COM库
+    if (g_gdiplusToken != 0)
+    {
+        Gdiplus::GdiplusShutdown(g_gdiplusToken);
+        g_gdiplusToken = 0;
+    }
+    if (comInitialized == true)
+    {
+        CoUninitialize();
+        comInitialized = false;
+    }
+    // 清理DC和位图
+    if (memDC != nullptr && hOldBmp != nullptr)
+    {
+        SelectObject(memDC, hOldBmp); // 选出自定义位图
+        DeleteDC(memDC);
+        memDC = nullptr;
+        hOldBmp = nullptr;
+    }
+    if (hdcScreen != nullptr)
+    {
+        ReleaseDC(hwnd, hdcScreen);
+        hdcScreen = nullptr;
+    }
+    if (hBmp != nullptr)
+    {
+        DeleteObject(hBmp);
+        hBmp = nullptr;
+    }
+}
