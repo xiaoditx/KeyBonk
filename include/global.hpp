@@ -9,6 +9,8 @@
 // 全局变量声明
 extern ULONG_PTR g_gdiplusToken;       // GDI+的token
 extern bool comInitialized;            // COM库是否初始化成功
+extern wchar_t *fullIniFilePath;       // 配置文件完整路径
+extern wchar_t *fullDebugFilePath;     // 日志文件完整路径
 extern HWND hwnd;                      // 主窗口句柄
 extern HWND hwndAbout;                 // "关于"窗口句柄
 extern HWND hwndSetting;               // “设置”窗口句柄

@@ -105,8 +105,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 std::wstring x = std::to_wstring(rect.left);
                 std::wstring y = std::to_wstring(rect.top);
-                WritePrivateProfileString(L"record", L"win-x", x.c_str(), L"./config.ini");
-                WritePrivateProfileString(L"record", L"win-y", y.c_str(), L"./config.ini");
+                WritePrivateProfileString(L"record", L"win-x", x.c_str(), fullIniFilePath);
+                WritePrivateProfileString(L"record", L"win-y", y.c_str(), fullIniFilePath);
             }
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
         }
@@ -115,8 +115,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         RemoveTrayIcon();
         // 记录静音状态
-        WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), L"./config.ini");
-        WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), L"./config.ini");
+        WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), fullIniFilePath);
+        WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), fullIniFilePath);
         // 退出
         PostQuitMessage(0);
         return 0;
