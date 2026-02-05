@@ -40,6 +40,8 @@ BOOL IsInstanceAlreadyRunning(LPCTSTR windowClass, LPCTSTR windowTitle)
 // 主程序
 int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, [[maybe_unused]] PWSTR pCmdLine, int nCmdShow)
 {
+    fullDebugFilePath = new wchar_t[MAX_PATH]{};
+    GetExeRelativePath(L"./log.txt", fullDebugFilePath, MAX_PATH);
 
     if (IsInstanceAlreadyRunning(L"KeyBonk主窗口", L"KeyBonk主窗口"))
     {
@@ -56,7 +58,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     // 读取配置项文件中的record（上次退出时记录）部分
     // 格式化出ini文件的完整路径
-    wchar_t *fullIniFilePath = new wchar_t[MAX_PATH]{};
+    fullIniFilePath = new wchar_t[MAX_PATH]{};
     GetExeRelativePath(L"./config.ini", fullIniFilePath, MAX_PATH);
     // win-x和win-y 上次退出时的窗口位置
     int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, fullIniFilePath);
@@ -67,8 +69,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     // 读取设置信息
     GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", audioLibPath, MAX_PATH, fullIniFilePath);
-
-    delete[] fullIniFilePath;
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);

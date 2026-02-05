@@ -1,5 +1,9 @@
 // resource.h
 #pragma once
+#ifndef RESOURCE_HPP
+#define RESOURCE_HPP
+
+#include "../include/globalDevelopmentControl.hpp"
 
 // 资源ID
 #define IDI_APP_ICON 101
@@ -17,3 +21,5 @@
 // 字符串表
 #define IDS_APP_TITLE 10001
 #define IDS_TRAY_TOOLTIP 10002
+
+#endif // RESOURCE_HPP

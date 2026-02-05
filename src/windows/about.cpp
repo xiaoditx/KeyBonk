@@ -12,6 +12,7 @@
 #include <string>
 #include "windows/about.hpp"
 #include "global.hpp"
+#include "globalDevelopmentControl.hpp"
 #include "../resource/resources.hpp"
 
 // 打开“关于”窗口
@@ -130,7 +131,7 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         hwnd, (HMENU)IDC_SOFTWARE_NAME, C_hInstance, NULL);
 
         // 创建软件版本文本
-        CreateWindowExW(0, L"STATIC", L"版本: v1.2.3.0",
+        CreateWindowExW(0, L"STATIC", L"版本: v" w_appVersion,
                         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
                         130, 60, clientWidth - 150, 20,
                         hwnd, (HMENU)IDC_VERSION, C_hInstance, NULL);
@@ -145,7 +146,7 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         CreateWindowExW(0, L"STATIC",
                         L"    KeyBonk是一款键盘音效软件，为了让您收获更优秀的按键效果。"
                         L"软件基于旧版由易语言开发的软件坤音键盘进行重开发，运行效率等方面均有所提升\r\n"
-                        L"    当前版本的变化：加入日志系统并修复了已知问题",
+                        L"    当前版本的变化：" versionChange,
                         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
                         20, 130, clientWidth - 40, 120, // 增加高度以容纳更多内容
                         hwnd, (HMENU)IDC_DESCRIPTION, C_hInstance, NULL);
