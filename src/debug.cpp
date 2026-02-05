@@ -1,4 +1,5 @@
 #include "debug.hpp"
+#include "global.hpp"
 #include <fstream>
 #include <codecvt>
 #include <locale>
@@ -8,7 +9,7 @@ namespace debug
     void logOutput(const wchar_t *message)
     {
         // 使用追加模式打开文件，确保每次调用不会覆盖之前的日志
-        std::wofstream logFile("./log.txt", std::ios::app);
+        std::wofstream logFile(fullDebugFilePath, std::ios::app);
 
         if (!logFile.is_open())
         {
@@ -28,7 +29,7 @@ namespace debug
     void logOutputWithoutEndl(const wchar_t *message)
     {
         // 使用追加模式打开文件，确保每次调用不会覆盖之前的日志
-        std::wofstream logFile("./log.txt", std::ios::app);
+        std::wofstream logFile(fullDebugFilePath, std::ios::app);
 
         if (!logFile.is_open())
         {
