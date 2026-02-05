@@ -7,23 +7,25 @@
 #endif
 
 #include <windows.h>
-#include <gdiplus.h>
 #include "global.hpp"
 
 // 全局变量定义
-ULONG_PTR g_gdiplusToken = 0;              // GDI+的token
-HWND hwnd = NULL;                          // 主窗口句柄
-HWND hwndAbout = NULL;                     // "关于"窗口句柄
-HWND hwndSetting = NULL;                   // “设置”窗口句柄
-Gdiplus::Image *g_pBackgroundImage = NULL; // 背景图片
-bool Mute = false;                         // 键盘是否静音
-bool MuteMouse = false;                    // 鼠标是否静音
-bool WindowPenetrate = false;              // 窗口穿透
-NOTIFYICONDATA nid = {};                   // 任务栏通知区域图标状态
-wchar_t audioLibPath[MAX_PATH];            // 音频库位置
+ULONG_PTR g_gdiplusToken = 0;   // GDI+的token
+HWND hwnd = NULL;               // 主窗口句柄
+HWND hwndAbout = NULL;          // "关于"窗口句柄
+HWND hwndSetting = NULL;        // “设置”窗口句柄
+bool Mute = false;              // 键盘是否静音
+bool MuteMouse = false;         // 鼠标是否静音
+bool WindowPenetrate = false;   // 窗口穿透
+NOTIFYICONDATA nid = {};        // 任务栏通知区域图标状态
+wchar_t audioLibPath[MAX_PATH]; // 音频库位置
 bool minimum = false;
 HINSTANCE C_hInstance = NULL;
 HHOOK KeyboardHook = NULL; // 钩子句柄
 HHOOK MouseHook = NULL;    // 钩子句柄
+HBITMAP hBmp;              // 存储背景图片的位图
+HDC hdcScreen;             // 主窗口屏幕DC
+HDC memDC;                 // 主窗口内存DC
+HBITMAP hOldBmp;           // 主窗口内存DC默认位图
 int C_nCmdShow;
 HRESULT hrMain; // 接受Windows函数的返回结果

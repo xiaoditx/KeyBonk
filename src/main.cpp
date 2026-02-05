@@ -140,7 +140,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     Gdiplus::Bitmap *pBitmap;
     if (FileExists(imgPath))
     {
-        g_pBackgroundImage = new Gdiplus::Image(imgPath);
         pBitmap = Gdiplus::Bitmap::FromFile(imgPath);
         if (!pBitmap || pBitmap->GetLastStatus() != Gdiplus::GpStatus::Ok)
         {
@@ -164,13 +163,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
     delete[] imgPath;
 
-    HBITMAP hBmp;
-    pBitmap->Gdiplus::Bitmap::GetHBITMAP(Gdiplus::Color(0, 0, 0, 0), &hBmp); // 透明背景
+    pBitmap->Gdiplus::Bitmap::GetHBITMAP(
+        Gdiplus::Color(0, 0, 0, 0),
+        &hBmp); // 透明背景
+
+    delete pBitmap;
 
     // 创建内存DC
-    HDC hdcScreen = GetDC(hwnd);
-    HDC memDC = CreateCompatibleDC(hdcScreen);
-    HBITMAP hOldBmp = (HBITMAP)SelectObject(memDC, hBmp);
+    hdcScreen = GetDC(hwnd);
+    memDC = CreateCompatibleDC(hdcScreen);
+    hOldBmp = (HBITMAP)SelectObject(memDC, hBmp);
 
     // 获取图片尺寸
     BITMAP bm;
@@ -181,12 +183,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     POINT ptSrc = {0, 0};
     BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
     UpdateLayeredWindow(hwnd, hdcScreen, NULL, &size, memDC, &ptSrc, 0, &bf, ULW_ALPHA);
-
-    // 清理
-    SelectObject(memDC, hOldBmp);
-    DeleteDC(memDC);
-    ReleaseDC(hwnd, hdcScreen);
-    DeleteObject(hBmp);
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
@@ -205,11 +201,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         // 释放已分配的资源
-        if (g_pBackgroundImage)
-        {
-            delete g_pBackgroundImage;
-            g_pBackgroundImage = NULL;
-        }
         Gdiplus::GdiplusShutdown(g_gdiplusToken);
         CoUninitialize();
         return 0;
@@ -230,11 +221,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         // 释放已分配的资源
         UnhookWindowsHookEx(KeyboardHook);
         KeyboardHook = NULL;
-        if (g_pBackgroundImage)
-        {
-            delete g_pBackgroundImage;
-            g_pBackgroundImage = NULL;
-        }
         Gdiplus::GdiplusShutdown(g_gdiplusToken);
         CoUninitialize();
         return 0;
@@ -260,17 +246,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         MouseHook = NULL;
     }
 
-    // 释放背景图片
-    if (g_pBackgroundImage)
-    {
-        delete g_pBackgroundImage;
-        g_pBackgroundImage = NULL;
-    }
-
     // 关闭GDI+和COM库
     Gdiplus::GdiplusShutdown(g_gdiplusToken);
     CoUninitialize();
-    delete pBitmap;
-
+    // 清理DC和位图
+    SelectObject(memDC, hOldBmp); // 选出自定义位图
+    DeleteDC(memDC);
+    ReleaseDC(hwnd, hdcScreen);
+    DeleteObject(hBmp);
     return 0;
 }

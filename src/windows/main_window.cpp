@@ -62,22 +62,28 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
         return false;             // 返回错误
 
     LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+    BLENDFUNCTION bf;
 
     // 开启开始关闭
     if (enable)
     {
         exStyle |= WS_EX_TRANSPARENT;
-        BYTE alpha = 153; // 255*0.6也就是60%不透明度
-        SetLayeredWindowAttributes(hwnd, 13217535, alpha, LWA_ALPHA | LWA_COLORKEY);
+        bf = {AC_SRC_OVER, 0, (BYTE)(255 * 0.6), AC_SRC_ALPHA};
     }
     else
     {
         exStyle &= ~WS_EX_TRANSPARENT;
-        BYTE alpha = 255; // 100%不透明度
-        SetLayeredWindowAttributes(hwnd, 13217535, alpha, LWA_COLORKEY | LWA_ALPHA);
+        bf = {AC_SRC_OVER, 0, (BYTE)(255), AC_SRC_ALPHA};
     }
 
     SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
+    // 获取背景图片尺寸
+    BITMAP bm;
+    GetObject(hBmp, sizeof(BITMAP), &bm);
+    SIZE size = {bm.bmWidth, bm.bmHeight};
+    // 更新窗口显示
+    POINT ptSrc = {0, 0};
+    UpdateLayeredWindow(hwnd, hdcScreen, NULL, &size, memDC, &ptSrc, 0, &bf, ULW_ALPHA);
 
     // 刷新窗口
     SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
@@ -107,11 +113,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return 0;
 
     case WM_DESTROY:
-        if (g_pBackgroundImage)
-        {
-            delete g_pBackgroundImage; // 释放背景图片
-            g_pBackgroundImage = NULL; // 设置为空防止重新解引用
-        }
         RemoveTrayIcon();
         Gdiplus::GdiplusShutdown(g_gdiplusToken); // 关闭GDI库
         CoUninitialize();                         // 关闭COM库
@@ -141,27 +142,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         showMenu();
         return 0;
     }
-
-    case WM_PAINT:
-    {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwnd, &ps);
-        Gdiplus::Graphics graphics(hdc);
-
-        // 获取客户区大小
-        RECT clientRect;
-        GetClientRect(hwnd, &clientRect);
-        int windowWidth = clientRect.right - clientRect.left;
-        int windowHeight = clientRect.bottom - clientRect.top;
-
-        // 将图片绘制到整个窗口客户区
-        if (g_pBackgroundImage)
-        {
-            graphics.DrawImage(g_pBackgroundImage, 0, 0, windowWidth, windowHeight);
-        }
-        EndPaint(hwnd, &ps);
-    }
-        return 0;
 
     case WM_SIZE:
     {
