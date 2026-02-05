@@ -22,9 +22,9 @@ bool WindowPenetrate = false;   // 窗口穿透
 NOTIFYICONDATA nid = {};        // 任务栏通知区域图标状态
 wchar_t audioLibPath[MAX_PATH]; // 音频库位置
 bool minimum = false;
-HINSTANCE C_hInstance = nullptr;
+HINSTANCE C_hInstance;
 HHOOK KeyboardHook = nullptr; // 钩子句柄
-HHOOK MouseHook = NULL;       // 钩子句柄
+HHOOK MouseHook = nullptr;       // 钩子句柄
 HBITMAP hBmp = nullptr;       // 存储背景图片的位图
 HDC hdcScreen = nullptr;      // 主窗口屏幕DC
 HDC memDC = nullptr;          // 主窗口内存DC

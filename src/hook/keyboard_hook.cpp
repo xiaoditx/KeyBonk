@@ -7,36 +7,12 @@
 #endif
 
 #include <windows.h>
-#include <mmsystem.h>
 #include <wchar.h>
+// #include <mmsystem.h>
 #include "debug.hpp"
-#include "hook/mouse_hook.hpp"
 #include "hook/keyboard_hook.hpp"
-#include "functions/files.hpp"
-#include "functions/randnum.hpp"
 #include "global.hpp"
-
-// 播放音频文件的通用函数
-void PlayAudioFile(const wchar_t *fileName)
-{
-    wchar_t audioPath[MAX_PATH]{};
-    swprintf_s(audioPath,
-               MAX_PATH,
-               L"%ls\\audios\\%ls.wav", // 格式串
-               audioLibPath,            // 音频库位置
-               fileName);               // 文件名
-    wchar_t *fullPath = new wchar_t[MAX_PATH]{};
-    GetExeRelativePath(audioPath, fullPath, MAX_PATH);
-
-    if (FileExists(fullPath))
-    {
-        debug::logOutputWithoutEndl(L"[功能]播放了音频");
-        debug::logOutput(fullPath);
-        PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
-    }
-
-    delete[] fullPath;
-}
+#include "functions/audioPlay.hpp"
 
 // 低级键盘钩子的回调函数
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -52,23 +28,6 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
             swprintf_s(fileName, MAX_PATH, L"%lu", vkCode);
             PlayAudioFile(fileName);
         }
-    }
-    // 按照规定需要将事件传递给下一个钩子或系统
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
-}
-
-// 低级鼠标钩子的回调函数
-LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
-    if ((wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) and not MuteMouse)
-    {
-        // 临时版本，文件写死在代码里
-        const wchar_t *audioList[] = {L"74", L"77", L"78", L"84"};
-        const int audioFileNumber = sizeof(audioList) / sizeof(audioList[0]);
-
-        // 随机挑一个音频播放
-        const wchar_t *name = audioList[random::getInt(0, audioFileNumber - 1)];
-        PlayAudioFile(name);
     }
     // 按照规定需要将事件传递给下一个钩子或系统
     return CallNextHookEx(NULL, nCode, wParam, lParam);

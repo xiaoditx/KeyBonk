@@ -9,6 +9,5 @@
 
 // 函数声明
 LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam); // 钩子回调
-LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam);    // 钩子回调
 
 #endif // KEYBOARD_HOOK_H
