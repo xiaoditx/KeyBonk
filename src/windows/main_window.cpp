@@ -14,7 +14,7 @@
 #include "windows/about.hpp"
 #include "windows/setting.hpp"
 #include "global.hpp"
-#include "../resource/resources.hpp"
+#include "resources.hpp"
 
 // 自定义消息
 #define WM_WINDOW_HAS_CREAT (WM_APP + 4) // 窗口以及创建，由后面打开的进程发送到当前窗口
@@ -77,7 +77,7 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
     }
 
     SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
-    UpdateLayeredWindow(hwnd,NULL,NULL,NULL,NULL,NULL, 0, &bf, ULW_ALPHA);
+    UpdateLayeredWindow(hwnd, NULL, NULL, NULL, NULL, NULL, 0, &bf, ULW_ALPHA);
 
     // 刷新窗口
     SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
