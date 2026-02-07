@@ -46,13 +46,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     if (IsInstanceAlreadyRunning(L"KeyBonk主窗口", L"KeyBonk主窗口"))
     {
         // 输出错误日志
-        debug::logOutput(L"\n===检查到KeyBonk主窗口重复创建,软件退出==="
-                         L"\n退出信息：\nhInstance:",
-                         std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str(),
-                         L"\nCmdShow:", std::to_wstring(nCmdShow).c_str(),
-                         L"\n===============================\n");
+        debug::logOutput(
+            L"[初始化]KeyBonk主窗口重复创建,软件退出\n"
+            L"\n    - hInstance:",
+            std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str(), L"\n",
+            L"\nCmdShow:", std::to_wstring(nCmdShow).c_str(), L"\n");
         return 0;
     }
+
+    debug::logProgramStartTime();
 
     // 保存一些参数到全局
     C_hInstance = hInstance;
