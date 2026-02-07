@@ -22,20 +22,20 @@ LDLIBS   = -luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
 
 # 目录变量
 BUILD_BASE:= build
-BUILD_DIR := $(BUILD_BASE)/$(ARCH)
+BUILD_DIR := $(BUILD_BASE)\$(ARCH)
 SRC_DIR   := src
 INC_DIR   := include
 RES_DIR   := resource
-OBJ_DIR   := $(BUILD_DIR)/obj
-BIN       := $(BUILD_DIR)/KeyBonk.exe
+OBJ_DIR   := $(BUILD_DIR)\obj
+BIN       := $(BUILD_DIR)\KeyBonk.exe
 
 # 源文件列表 
-CXX_SRCS := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/windows/*.cpp) $(wildcard $(SRC_DIR)/hook/*.cpp) $(wildcard $(SRC_DIR)/functions/*.cpp)
-RES_SRC  := $(RES_DIR)/resources.rc
+CXX_SRCS := $(wildcard $(SRC_DIR)\*.cpp) $(wildcard $(SRC_DIR)\windows\*.cpp) $(wildcard $(SRC_DIR)\hook\*.cpp) $(wildcard $(SRC_DIR)\functions\*.cpp)
+RES_SRC  := $(RES_DIR)\resources.rc
 
 # 自动推导对象 
-CXX_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CXX_SRCS))
-RES_OBJ  := $(OBJ_DIR)/rc/resources.o
+CXX_OBJS := $(patsubst $(SRC_DIR)\%.cpp,$(OBJ_DIR)\%.o,$(CXX_SRCS))
+RES_OBJ  := $(OBJ_DIR)\rc\resources.o
 
 # 默认目标 
 .PHONY: all clean help
@@ -53,7 +53,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -MMD -MP -c $< -o $@
 
 # 资源文件 
-$(RES_OBJ): $(RES_SRC) | $(OBJ_DIR)\rc
+$(RES_OBJ): $(RES_SRC) .\include\globalDevelopmentControl.hpp $(OBJ_DIR)\rc
 	@echo Compile rc file "$<" into $@
 	@$(WINDRES) $< $(WINDRES_FLAG) $@
 

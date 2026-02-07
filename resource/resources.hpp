@@ -1,5 +1,4 @@
 // resource.h
-#pragma once
 #ifndef RESOURCE_HPP
 #define RESOURCE_HPP
 
