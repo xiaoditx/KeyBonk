@@ -4,6 +4,7 @@
         "gguf",
         "keybonk",
         "Qwen",
+        "randnum",
         "RLHF"
     ],
     "files.associations": {
