@@ -77,13 +77,7 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
     }
 
     SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
-    // 获取背景图片尺寸
-    BITMAP bm;
-    GetObject(hBmp, sizeof(BITMAP), &bm);
-    SIZE size = {bm.bmWidth, bm.bmHeight};
-    // 更新窗口显示
-    POINT ptSrc = {0, 0};
-    UpdateLayeredWindow(hwnd, hdcScreen, NULL, &size, memDC, &ptSrc, 0, &bf, ULW_ALPHA);
+    UpdateLayeredWindow(hwnd,NULL,NULL,NULL,NULL,NULL, 0, &bf, ULW_ALPHA);
 
     // 刷新窗口
     SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
