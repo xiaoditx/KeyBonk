@@ -45,10 +45,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     if (IsInstanceAlreadyRunning(L"KeyBonk主窗口", L"KeyBonk主窗口"))
     {
-        debug::logOutput(L"\n===检查到KeyBonk主窗口重复创建,软件退出===");
-        debug::logOutputWithoutEndl(L"退出信息：\nhInstance:");
-        debug::logOutputWithoutEndl(std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str());
-        debug::logOutput(L"\n===============================\n");
+        // 输出错误日志
+        debug::logOutput(L"\n===检查到KeyBonk主窗口重复创建,软件退出==="
+                         L"\n退出信息：\nhInstance:",
+                         std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str(),
+                         L"\nCmdShow:", std::to_wstring(nCmdShow).c_str(),
+                         L"\n===============================\n");
         return 0;
     }
 
@@ -75,7 +77,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     if (FAILED(hrMain))
     {
-        debug::logOutput(L"[初始化]初始化COM库异常");
+        debug::logOutput(L"[初始化]初始化COM库异常\n    - HRESULT：", std::to_wstring(hrMain).c_str());
         MessageBoxExW(
             NULL, L"错误：00001，初始化COM库时发生异常，请检查系统相关文件是否完好",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -111,7 +113,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     // 创建失败则提示并返回，结束运行
     if (hwnd == NULL)
     {
-        debug::logOutput(L"[初始化]主窗口创建异常");
+        debug::logOutput(L"[初始化]主窗口创建异常\n    - 错误代码：", std::to_wstring(GetLastError()).c_str());
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -125,7 +127,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     GDIpStatus = Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, NULL);
     if (GDIpStatus != Gdiplus::Ok)
     { // 如果存在问题
-        debug::logOutput(L"[初始化]GDI+初始化异常");
+        debug::logOutput(L"[初始化]GDI+初始化异常\n    - GDI+状态码：", std::to_wstring(GDIpStatus).c_str());
         MessageBoxExW(
             NULL, L"错误：00003，初始化GDI+库时发生异常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -154,7 +156,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
     else
     {
-        debug::logOutput(L"[初始化]找不到背景图片");
+        debug::logOutput(L"[初始化]找不到背景图片\n    - 路径：", imgPath,
+                         L"\n    - 建议：检查文件夹完整性，确保背景图片存在于指定位置");
         MessageBoxExW(
             NULL, L"错误：00004，当前声音库找不到背景图片，请检查文件夹完整性",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -197,7 +200,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         0);
     if (KeyboardHook == NULL)
     { // 没拿到句柄则失败
-        debug::logOutput(L"[初始化]键盘钩子安装失败");
+        debug::logOutput(L"[初始化]键盘钩子安装失败\n    - 错误代码：", std::to_wstring(GetLastError()).c_str());
         MessageBoxExW(
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
@@ -214,7 +217,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         0);
     if (MouseHook == NULL)
     { // 没拿到句柄则失败
-        debug::logOutput(L"[初始化]鼠标钩子安装失败");
+        debug::logOutput(L"[初始化]鼠标钩子安装失败\n    - 错误代码：", std::to_wstring(GetLastError()).c_str());
         MessageBoxExW(
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
