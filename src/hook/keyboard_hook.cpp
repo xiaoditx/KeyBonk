@@ -23,8 +23,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
         if ((wParam == WM_KEYDOWN /*|| wParam == WM_SYSKEYDOWN*/) and not Mute)
         {
             DWORD vkCode = keyInfo->vkCode;
-            wchar_t fileName[MAX_PATH]{};
-            swprintf_s(fileName, MAX_PATH, L"%lu", vkCode);
+            wchar_t fileName[10]{};
+            swprintf_s(fileName, _countof(fileName), L"%lu", vkCode);
             PlayAudioFile(fileName);
         }
     }
