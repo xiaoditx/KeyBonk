@@ -1,35 +1,34 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
+#include "global.hpp"
+#include <fstream>
+#include <codecvt>
+#include <locale>
+
 namespace debug
 {
-    /**
-     * @brief 将宽字符串日志写入到 ./log.txt 文件
-     *
-     * @param message 要写入的宽字符串消息
-     *
-     * 该函数会将传入的宽字符串消息追加写入到当前目录下的 log.txt 文件中。
-     * 每次调用都会在消息后自动添加换行符。
-     * 如果文件无法打开，函数会静默失败。
-     *
-     * @note 文件使用 UTF-8 编码，支持跨平台使用。
-     * @note 使用追加模式，不会覆盖之前的日志内容。
-     */
-    void logOutput(const wchar_t *message);
+    template <typename... Args>
+    void logOutput(Args... args)
+    {
+        // 使用追加模式打开文件，确保每次调用不会覆盖之前的日志
+        std::wofstream logFile(fullDebugFilePath, std::ios::app);
 
-    /**
-     * @brief 不自动换行的将宽字符串日志写入到 ./log.txt 文件
-     *
-     * @param message 要写入的宽字符串消息
-     *
-     * 该函数会将传入的宽字符串消息追加写入到当前目录下的 log.txt 文件中。
-     * 每次调用不自动添加换行符。
-     * 如果文件无法打开，函数会静默失败。
-     *
-     * @note 文件使用 UTF-8 编码，支持跨平台使用。
-     * @note 使用追加模式，不会覆盖之前的日志内容。
-     */
-    void logOutputWithoutEndl(const wchar_t *message);
+        if (!logFile.is_open())
+        {
+            // 如果文件无法打开，可以在这里添加错误处理
+            // 当前实现选择静默失败，避免影响主程序运行
+            return;
+        }
+
+        // 设置locale以支持宽字符写入
+        logFile.imbue(std::locale(logFile.getloc(), new std::codecvt_utf8<wchar_t>));
+
+        // 写入消息
+        ((logFile << args), ...);
+
+        // 文件会在析构时自动关闭
+    }
 }
 
 #endif // DEBUG_HPP

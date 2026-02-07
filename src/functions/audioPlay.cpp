@@ -1,6 +1,7 @@
 #include <windows.h>
 #include "functions/audioPlay.hpp"
 #include "debug.hpp"
+#include "globalDevelopmentControl.hpp"
 #include "functions/files.hpp"
 #include "global.hpp"
 
@@ -18,9 +19,8 @@ void PlayAudioFile(const wchar_t *fileName)
 
     if (FileExists(fullPath))
     {
-#if development
-        debug::logOutputWithoutEndl(L"[功能]播放了音频");
-        debug::logOutput(fullPath);
+#if develop
+        debug::logOutput(L"[功能]播放了音频", fullPath,"\n");
 #endif
         PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
     }
