@@ -12,7 +12,7 @@
 #include <string>
 #include "windows/setting.hpp"
 #include "global.hpp"
-#include "../resource/resources.hpp"
+#include "resources.hpp"
 
 // 打开“设置”窗口
 void settingWindowOpen()

@@ -18,7 +18,7 @@
 #include "hook/keyboard_hook.hpp"
 #include "hook/mouse_hook.hpp"
 #include "functions/files.hpp"
-#include "../resource/resources.hpp"
+#include "resources.hpp"
 
 // 自定义消息
 #define WM_WINDOW_HAS_CREAT (WM_APP + 4) // 窗口以及创建，由后面打开的进程发送到当前窗口

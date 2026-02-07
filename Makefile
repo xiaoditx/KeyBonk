@@ -50,7 +50,7 @@ $(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)/bin/default
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@echo Compile $< into $@
 	@if not exist "$(dir $@)" mkdir "$(dir $@)"
-	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -MMD -MP -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -I$(RES_DIR) -MMD -MP -c $< -o $@
 
 # 资源文件 
 $(RES_OBJ): $(RES_SRC) ./include/globalDevelopmentControl.hpp | $(OBJ_DIR)/rc

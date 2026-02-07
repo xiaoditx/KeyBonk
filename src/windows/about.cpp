@@ -13,7 +13,7 @@
 #include "windows/about.hpp"
 #include "global.hpp"
 #include "globalDevelopmentControl.hpp"
-#include "../resource/resources.hpp"
+#include "resources.hpp"
 
 // 打开“关于”窗口
 void aboutWindowOpen()
