@@ -29,6 +29,8 @@ namespace debug
 
         // 文件会在析构时自动关闭
     }
+
+    void logWinError(DWORD errorCode);
 }
 
 #endif // DEBUG_HPP
