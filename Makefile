@@ -42,7 +42,7 @@ RES_OBJ  := $(OBJ_DIR)/rc/resources.o
 all: $(BIN)
 
 # 链接 
-$(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)\bin\default
+$(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)/bin/default
 	@echo Linking ...
 	@$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
@@ -53,7 +53,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -MMD -MP -c $< -o $@
 
 # 资源文件 
-$(RES_OBJ): $(RES_SRC) | $(OBJ_DIR)\rc
+$(RES_OBJ): $(RES_SRC) ./include/globalDevelopmentControl.hpp | $(OBJ_DIR)/rc
 	@echo Compile rc file "$<" into $@
 	@$(WINDRES) $< $(WINDRES_FLAG) $@
 
@@ -65,12 +65,12 @@ $(OBJ_DIR):
 	@echo Making the build folder ...
 	@if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
 
-$(OBJ_DIR)\rc:
+$(OBJ_DIR)/rc:
 	@echo Making the rc folder in $(OBJ_DIR)
-	@if not exist "$(OBJ_DIR)\rc" mkdir "$(OBJ_DIR)\rc"
+	@if not exist "$(OBJ_DIR)/rc" mkdir "$(OBJ_DIR)/rc"
 
 # 资源文件复制
-$(BUILD_DIR)\bin\default:
+$(BUILD_DIR)/bin/default:
 	@echo Copy resources to "$@":
 	@if not exist "$@" mkdir "$@"
 	
