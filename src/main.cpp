@@ -47,10 +47,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     {
         // 输出错误日志
         debug::logOutput(
-            L"[初始化]KeyBonk主窗口重复创建,软件退出\n"
+            L"[初始化]KeyBonk主窗口重复创建,软件退出"
             L"\n    - hInstance:",
-            std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str(), L"\n",
-            L"\nCmdShow:", std::to_wstring(nCmdShow).c_str(), L"\n");
+            std::to_wstring(reinterpret_cast<long long>(hInstance)).c_str(),
+            L"\n    - CmdShow:", std::to_wstring(nCmdShow).c_str(), L"\n");
         return 0;
     }
 
