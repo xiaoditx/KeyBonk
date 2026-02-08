@@ -42,7 +42,7 @@ V 1.3.0.1 基础版本
 
 ### 安装
 
-软件安装包可以在[Release](https://github.com/xiaoditx/KeyBonk/releases)页面找到，早期版本为单文件
+软件安装包在[Release](https://github.com/xiaoditx/KeyBonk/releases)页面，请选择你想要的版本，推荐使用最新版的前一个版本
 
 软件仅支持Windows，提供64位和32位两个版本
 
@@ -70,7 +70,7 @@ lib=（你自己创建的文件夹路径比如.\bin\default）
 - win32
 - C++17
 - GDI+
-- ~~COM库~~
+- ~~COM库~~（计划引入）
 
 开发环境
 
