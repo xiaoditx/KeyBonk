@@ -6,8 +6,18 @@
 #define MyAppPublisher "小狄同学呀"
 #define MyAppURL "https://xiaoditx.github.io/"
 #define MyAppExeName "KeyBonk.exe"
-#define MyAppArch "64"
-#define MyAppArchStr "x64"
+; 架构控制
+#ifndef MyAppArch ;64或32，默认64
+  #define MyAppArch "64"
+#endif
+;架构的文字版本
+#ifndef MyAppArchStr
+  #if MyAppArch == "64"
+    #define MyAppArchStr "x64"
+  #elif MyAppArch == "32"
+    #define MyAppArchStr "x86"
+  #endif
+#endif
 #define DefaultAudioLib "bin\default"
 
 [Setup]
