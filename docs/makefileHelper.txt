@@ -1,0 +1,26 @@
+
+[makefile帮助]
+默认模式: 64位调试模式
+
+可以使用的目标:
+ all clean help run release release64 release32 installer installer64 installer32
+
+目标作用：
+	- all: 在默认模式下构建项目
+	- clean: 删除所有构建文件
+	- help: 显示此帮助信息
+	- run: 运行已构建的可执行文件
+	- release: 构建64位和32位发布版本
+	- release64: 构建64位发布版本
+	- release32: 构建32位发布版本
+	- installer: 构建64位和32位安装程序
+	- installer64: 构建64位发布版本的安装程序
+	- installer32: 构建32位发布版本的安装程序
+
+可以控制变量：
+ DEBUG ARCH
+注释：
+	- DEBUG: 设置debug参数用于cpp文件编译，默认为-DKB_DEBUG
+	- ARCH: 当前编译架构（32/64位）
+
+帮助编写时间：2026/2/9 17:02
