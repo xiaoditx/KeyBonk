@@ -1,16 +1,16 @@
-; ½Å±¾ÓÉ Inno Setup ½Å±¾Ïòµ¼ Éú³É£¡
-; ÓĞ¹Ø´´½¨ Inno Setup ½Å±¾ÎÄ¼şµÄÏêÏ¸×ÊÁÏÇë²éÔÄ°ïÖúÎÄµµ£¡
+ï»¿; è„šæœ¬ç”± Inno Setup è„šæœ¬å‘å¯¼ ç”Ÿæˆï¼
+; æœ‰å…³åˆ›å»º Inno Setup è„šæœ¬æ–‡ä»¶çš„è¯¦ç»†èµ„æ–™è¯·æŸ¥é˜…å¸®åŠ©æ–‡æ¡£ï¼
 
-#define MyAppName "·¢Éù¼üÅÌ-KeyBonk"
+#define MyAppName "å‘å£°é”®ç›˜-KeyBonk"
 #define MyAppVersion "1.3.0.1"
-#define MyAppPublisher "Ğ¡µÒÍ¬Ñ§Ñ½"
+#define MyAppPublisher "å°ç‹„åŒå­¦å‘€"
 #define MyAppURL "https://xiaoditx.github.io/"
 #define MyAppExeName "KeyBonk.exe"
-; ¼Ü¹¹¿ØÖÆ
-#ifndef MyAppArch ;64»ò32£¬Ä¬ÈÏ64
+; æ¶æ„æ§åˆ¶
+#ifndef MyAppArch ;64æˆ–32ï¼Œé»˜è®¤64
   #define MyAppArch "64"
 #endif
-;¼Ü¹¹µÄÎÄ×Ö°æ±¾
+;æ¶æ„çš„æ–‡å­—ç‰ˆæœ¬
 #ifndef MyAppArchStr
   #if MyAppArch == "64"
     #define MyAppArchStr "x64"
@@ -21,9 +21,9 @@
 #define DefaultAudioLib "bin\default"
 
 [Setup]
-; ×¢: AppIdµÄÖµÎªµ¥¶À±êÊ¶¸ÃÓ¦ÓÃ³ÌĞò¡£
-; ²»ÒªÎªÆäËû°²×°³ÌĞòÊ¹ÓÃÏàÍ¬µÄAppIdÖµ¡£
-; (ÈôÒªÉú³ÉĞÂµÄ GUID£¬¿ÉÔÚ²Ëµ¥ÖĞµã»÷ "¹¤¾ß|Éú³É GUID"¡£)
+; æ³¨: AppIdçš„å€¼ä¸ºå•ç‹¬æ ‡è¯†è¯¥åº”ç”¨ç¨‹åºã€‚
+; ä¸è¦ä¸ºå…¶ä»–å®‰è£…ç¨‹åºä½¿ç”¨ç›¸åŒçš„AppIdå€¼ã€‚
+; (è‹¥è¦ç”Ÿæˆæ–°çš„ GUIDï¼Œå¯åœ¨èœå•ä¸­ç‚¹å‡» "å·¥å…·|ç”Ÿæˆ GUID"ã€‚)
 AppId={{4A64AE9D-C7CE-4B6D-B022-26408B9412A3}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -36,7 +36,7 @@ DefaultDirName={autopf}\KeyBonk
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=LICENSE
-; ÒÔÏÂĞĞÈ¡Ïû×¢ÊÍ£¬ÒÔÔÚ·Ç¹ÜÀí°²×°Ä£Ê½ÏÂÔËĞĞ£¨½öÎªµ±Ç°ÓÃ»§°²×°£©¡£
+; ä»¥ä¸‹è¡Œå–æ¶ˆæ³¨é‡Šï¼Œä»¥åœ¨éç®¡ç†å®‰è£…æ¨¡å¼ä¸‹è¿è¡Œï¼ˆä»…ä¸ºå½“å‰ç”¨æˆ·å®‰è£…ï¼‰ã€‚
 ;PrivilegesRequired=lowest
 OutputDir=.\build\installer\
 OutputBaseFilename=installer-{#MyAppArchStr}
@@ -58,7 +58,7 @@ Source: ".\build\{#MyAppArch}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignorev
 Source: ".\resource\audios\*"; DestDir: "{app}\{#DefaultAudioLib}\audios"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: ".\resource\background.png"; DestDir: "{app}\{#DefaultAudioLib}"; Flags: ignoreversion
 Source: ".\resource\icon-org.png"; DestDir: "{app}\{#DefaultAudioLib}"; Flags: ignoreversion
-; ×¢Òâ: ²»ÒªÔÚÈÎºÎ¹²ÏíÏµÍ³ÎÄ¼şÉÏÊ¹ÓÃ"Flags: ignoreversion"
+; æ³¨æ„: ä¸è¦åœ¨ä»»ä½•å…±äº«ç³»ç»Ÿæ–‡ä»¶ä¸Šä½¿ç”¨"Flags: ignoreversion"
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
