@@ -1,5 +1,6 @@
 # 编译架构选择，默认64位
 ARCH ?= 64
+DEBUG ?= -DKB_DEBUG
 
 # 使用cmd为shell并禁止所有隐式规则
 SHELL         := cmd
@@ -21,11 +22,11 @@ LDFLAGS  = -mwindows -municode
 LDLIBS   = -luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
 
 # 目录变量
-BUILD_BASE:= build
-BUILD_DIR := $(BUILD_BASE)/$(ARCH)
 SRC_DIR   := src
 INC_DIR   := include
 RES_DIR   := resource
+BUILD_BASE:= build
+BUILD_DIR := $(BUILD_BASE)/$(ARCH)
 OBJ_DIR   := $(BUILD_DIR)/obj
 BIN       := $(BUILD_DIR)/KeyBonk.exe
 
@@ -37,9 +38,10 @@ RES_SRC  := $(RES_DIR)/resources.rc
 CXX_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(CXX_SRCS))
 RES_OBJ  := $(OBJ_DIR)/rc/resources.o
 
-# 默认目标 
-.PHONY: all clean help
+# 默认目标（64位debug模式）
+.PHONY: all clean help run release release64 release32 installer installer64 installer32
 all: $(BIN)
+	@echo Build is done
 
 # 链接 
 $(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)/bin/default
@@ -50,7 +52,7 @@ $(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)/bin/default
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@echo Compile $< into $@
 	@if not exist "$(dir $@)" mkdir "$(dir $@)"
-	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -I$(RES_DIR) -MMD -MP -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(DEBUG) -I$(INC_DIR) -I$(RES_DIR)  -MMD -MP -c $< -o $@
 
 # 资源文件 
 $(RES_OBJ): $(RES_SRC) ./include/globalDevelopmentControl.hpp | $(OBJ_DIR)/rc
@@ -93,9 +95,41 @@ clean:
 
 # 帮助 
 help:
-	@echo 可用目标: all clean help run
+	@echo Available targets: all clean help run release release64 release32 installer installer64 installer32
+	@echo Default build: 64-bit debug mode
+	@echo 	- all: Build the project in default mode
+	@echo 	- clean: Remove all build files
+	@echo 	- help: Show this help message
+	@echo 	- run: Run the built executable
+	@echo 	- release: Build both 64-bit and 32-bit release versions
+	@echo 	- release64: Build 64-bit release version
+	@echo 	- release32: Build 32-bit release version
+	@echo 	- installer: Build installers for both 64-bit and 32-bit
+	@echo 	- installer64: Build installer for 64-bit release version
+	@echo 	- installer32: Build installer for 32-bit release version
 
-.PHONY: run
 run: $(BIN)
 	@echo [RUN] Running $(BIN)
 	@$(BIN)
+
+release: clean release64 release32
+	@echo All release builds are done
+
+release64:
+	@echo Building 64-bit release ...
+	@$(MAKE) ARCH=64 all DEBUG=
+
+release32:
+	@echo Building 32-bit release ...
+	@$(MAKE) ARCH=32 all DEBUG=
+
+installer: clean release64 installer64 release32 installer32
+	@echo All installer builds are done
+
+installer64: installer.iss release64
+	@echo Building installer ...
+	@iscc /DMyAppArch="64" installer.iss
+
+installer32: installer.iss release32
+	@echo Building installer ...
+	@iscc /DMyAppArch="32" installer.iss
