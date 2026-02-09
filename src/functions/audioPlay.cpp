@@ -19,8 +19,8 @@ void PlayAudioFile(const wchar_t *fileName)
 
     if (FileExists(fullPath))
     {
-#if develop
-        debug::logOutput(L"[功能]播放了音频", fullPath,"\n");
+#ifdef KB_DEBUG
+        debug::logOutput(L"[功能]播放了音频", fullPath, "\n");
 #endif
         PlaySoundW(fullPath, NULL, SND_FILENAME | SND_ASYNC);
     }
