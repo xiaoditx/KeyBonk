@@ -3,6 +3,7 @@ $(shell chcp 65001 >nul)
 
 # 编译架构选择，默认64位
 ARCH ?= 64
+# 编译cpp文件时的调试选项
 DEBUG ?= -DKB_DEBUG
 
 # 使用cmd为shell并禁止所有隐式规则
@@ -95,40 +96,48 @@ clean:
 	@echo 正在清理build目录 ...
 	@if exist "$(BUILD_BASE)" rmdir /S /Q "$(BUILD_BASE)"
 	@echo 清理完成
-#	if exist "KeyBonk.exe" del "KeyBonk.exe"
 
 # 帮助 
 help:
 	@type .\docs\makefileHelper.txt
 
+# 运行编译结果（默认64位）
 run: $(BIN)
 	@echo [运行] 运行 $(BIN)
 	@$(BIN)
 
+# 构建发布版（64+32）
 release: clean release64 release32
 	@echo 所有发布版本构建完成
 
+# 发布版64位构建
 release64:
 	@echo 正在构建64位发布版本 ...
 	@$(MAKE) ARCH=64 all DEBUG=
 
+# 发布版32位构建
 release32:
 	@echo 正在构建32位发布版本 ...
 	@$(MAKE) ARCH=32 all DEBUG=
 
+# 构建安装包（64+32）
 installer: clean release64 installer64 release32 installer32
 	@echo 所有安装程序构建完成
 
+# 64位安装包构建
 installer64: installer.iss release64
 	@echo 正在构建64位安装程序 ...
 	@for /f "tokens=*" %%c in ('chcp') do set OLD_CODEPAGE=%%c
 	@chcp 936 >nul
 	@iscc /DMyAppArch="64" installer.iss
+	@echo 64位安装程序编译运行结束
 	@chcp 65001 >nul
 
+# 32位安装包构建
 installer32: installer.iss release32
 	@echo 正在构建32位安装程序 ...
 	@for /f "tokens=*" %%c in ('chcp') do set OLD_CODEPAGE=%%c
 	@chcp 936 >nul
 	@iscc /DMyAppArch="32" installer.iss
+	@echo 32位安装程序编译运行结束
 	@chcp 65001 >nul
