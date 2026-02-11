@@ -127,17 +127,11 @@ installer: clean release64 installer64 release32 installer32
 # 64位安装包构建
 installer64: installer.iss release64
 	@echo 正在构建64位安装程序 ...
-	@for /f "tokens=*" %%c in ('chcp') do set OLD_CODEPAGE=%%c
-	@chcp 936 >nul
-	@iscc /DMyAppArch="64" installer.iss
-	@echo 64位安装程序编译运行结束
-	@chcp 65001 >nul
+	@start cmd /c chcp 936 ^&^& iscc /DMyAppArch=64 installer.iss
+	@echo 64位安装程序编译完毕
 
 # 32位安装包构建
 installer32: installer.iss release32
 	@echo 正在构建32位安装程序 ...
-	@for /f "tokens=*" %%c in ('chcp') do set OLD_CODEPAGE=%%c
-	@chcp 936 >nul
-	@iscc /DMyAppArch="32" installer.iss
-	@echo 32位安装程序编译运行结束
-	@chcp 65001 >nul
+	@start cmd /c chcp 936 ^&^& iscc /DMyAppArch=32 installer.iss
+	@echo 32位安装程序编译完毕
