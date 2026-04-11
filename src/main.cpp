@@ -170,6 +170,71 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     }
     delete[] imgPath;
 
+    // 获取原始位图尺寸
+    const int originalWidth = pBitmap->GetWidth();
+    const int originalHeight = pBitmap->GetHeight();
+
+    // 获取屏幕尺寸
+    const int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    const int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+    // 判断尺寸是否合法，避免后续计算出问题
+    if (!(originalWidth > 0 && originalHeight > 0) || !(screenWidth > 0 && screenHeight > 0))
+    {
+        debug::logOutput(L"[初始化]错误的屏幕尺寸或图片尺寸\n    - 图片尺寸：", std::to_wstring(originalWidth).c_str(), L"x", std::to_wstring(originalHeight).c_str(),
+                         L"\n    - 屏幕尺寸：", std::to_wstring(screenWidth).c_str(), L"x", std::to_wstring(screenHeight).c_str(), L"\n");
+        MessageBoxExW(
+            NULL, L"错误：00006，获取到错误的屏幕尺寸或图片尺寸，请检查系统设置和图片文件是否正常",
+            L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+        releaseGlobalResources();
+        return 0;
+    }
+
+    const bool notPortrait = screenHeight <= screenWidth; // 判断是否竖屏
+
+    // 计算最大允许尺寸
+    const int maxWidth = screenWidth / (notPortrait ? 4 : 2);   // 屏幕宽的四分之一
+    const int maxHeight = screenHeight / (notPortrait ? 2 : 4); // 屏幕高的二分之一
+
+    // 计算缩放比例
+    float widthRatio = (float)originalWidth / maxWidth;
+    float heightRatio = (float)originalHeight / maxHeight;
+    float scaleRatio = std::max(widthRatio, heightRatio);
+
+    // 计算缩放后的尺寸
+    int scaledWidth, scaledHeight;
+    if (scaleRatio > 1.0f)
+    {
+        // 需要缩放
+        scaledWidth = (int)(originalWidth / scaleRatio);
+        scaledHeight = (int)(originalHeight / scaleRatio);
+    }
+    else
+    {
+        // 不需要缩放
+        scaledWidth = originalWidth;
+        scaledHeight = originalHeight;
+    }
+
+    // 创建缩放后的位图
+    Gdiplus::Bitmap *scaledBitmap = new Gdiplus::Bitmap(scaledWidth, scaledHeight);
+    Gdiplus::Graphics graphics(scaledBitmap);
+
+    // 设置高质量缩放
+    graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+    graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
+
+    // 绘制缩放后的图像
+    graphics.DrawImage(pBitmap, 0, 0, scaledWidth, scaledHeight);
+
+    // 清理原始位图
+    delete pBitmap;
+    pBitmap = scaledBitmap; // 使用缩放后的位图
+
+    //--------------------------------------------------------
+
+    // 将GDI+位图转换为HBITMAP
     pBitmap->Gdiplus::Bitmap::GetHBITMAP(
         Gdiplus::Color(0, 0, 0, 0),
         &hBmp); // 透明背景
@@ -181,12 +246,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     memDC = CreateCompatibleDC(hdcScreen);
     hOldBmp = (HBITMAP)SelectObject(memDC, hBmp);
 
-    // 获取图片尺寸
-    BITMAP bm;
-    GetObject(hBmp, sizeof(BITMAP), &bm);
-    SIZE size = {bm.bmWidth, bm.bmHeight};
-
     // 使用UpdateLayeredWindow
+    SIZE size = {scaledWidth, scaledHeight};
     POINT ptSrc = {0, 0};
     BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
     UpdateLayeredWindow(hwnd, hdcScreen, NULL, &size, memDC, &ptSrc, 0, &bf, ULW_ALPHA);
