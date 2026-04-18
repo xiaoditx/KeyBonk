@@ -6,7 +6,10 @@
 
 #include <windows.h>
 #include <gdiplus.h>
-#include "functions/background.hpp"
+
+namespace keybonk {
+    class background; // 前向声明
+}
 
 // 全局变量声明
 extern ULONG_PTR g_gdiplusToken;       // GDI+的token
