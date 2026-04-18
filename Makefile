@@ -83,8 +83,8 @@ $(BUILD_DIR)/bin/default:
 	@echo == 正在将 "resource\audios" 复制到 "$@\audios\"
 	@xcopy /E /Y "resource\audios" "$@\audios\\" >nul
 	
-	@echo == 正在将 "resource\background.png" 复制到 "$@"
-	@xcopy /Y "resource\background.png" "$@" >nul
+	@echo == 正在将 "resource\background.png" 复制到 "$@\imgs"
+	@xcopy /Y "resource\background.png" "$@\imgs\\" >nul
 
 	@echo == 正在将 "resource\icon-org.png" 复制到 "$@"
 	@xcopy /Y "resource\icon-org.png" "$@" >nul

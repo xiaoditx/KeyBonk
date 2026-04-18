@@ -6,9 +6,7 @@
 #define UNICODE
 #endif
 
-#include <windows.h>
 #include "global.hpp"
-#include <gdiplus.h>
 
 // 全局变量定义
 ULONG_PTR g_gdiplusToken = 0;         // GDI+的token
@@ -32,7 +30,8 @@ HDC hdcScreen = nullptr;      // 主窗口屏幕DC
 HDC memDC = nullptr;          // 主窗口内存DC
 HBITMAP hOldBmp = nullptr;    // 主窗口内存DC默认位图
 int C_nCmdShow;
-HRESULT hrMain; // 接受Windows函数的返回结果
+HRESULT hrMain;                        // 接受Windows函数的返回结果
+keybonk::background *bg_ptr = nullptr; // 背景对象
 
 // 全局资源释放
 void releaseGlobalResources()

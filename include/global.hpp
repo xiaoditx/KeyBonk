@@ -5,6 +5,8 @@
 #define GLOBAL_H
 
 #include <windows.h>
+#include <gdiplus.h>
+#include "functions/background.hpp"
 
 // 全局变量声明
 extern ULONG_PTR g_gdiplusToken;       // GDI+的token
@@ -28,7 +30,8 @@ extern HDC memDC;                      // 主窗口内存DC
 extern HBITMAP hOldBmp;                // 主窗口内存DC默认位图
 extern HINSTANCE C_hInstance;
 extern int C_nCmdShow;
-extern HRESULT hrMain; // 接受Windows函数的返回结果
+extern HRESULT hrMain;              // 接受Windows函数的返回结果
+extern keybonk::background *bg_ptr; // 背景对象
 
 /**
  * @brief 统一释放需要释放的全局资源

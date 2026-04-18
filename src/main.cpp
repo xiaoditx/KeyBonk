@@ -19,6 +19,7 @@
 #include "hook/mouse_hook.hpp"
 #include "functions/files.hpp"
 #include "resources.hpp"
+#include "functions/background.hpp"
 
 // 自定义消息
 #define WM_WINDOW_HAS_CREAT (WM_APP + 4) // 窗口以及创建，由后面打开的进程发送到当前窗口
@@ -43,6 +44,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     fullDebugFilePath = new wchar_t[MAX_PATH]{};
     GetExeRelativePath(L"./log.txt", fullDebugFilePath, MAX_PATH);
 
+    // =============================================================
+    // ||                    重复启动检测                          ||
+    // =============================================================
+
     if (IsInstanceAlreadyRunning(L"KeyBonk主窗口", L"KeyBonk主窗口"))
     {
         // 输出错误日志
@@ -53,6 +58,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             L"\n    - CmdShow:", std::to_wstring(nCmdShow).c_str(), L"\n");
         return 0;
     }
+
+    // =============================================================
+    // ||                    准备启动信息                          ||
+    // =============================================================
 
     debug::logProgramStartTime();
 
@@ -73,6 +82,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
 
     // 读取设置信息
     GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", audioLibPath, MAX_PATH, fullIniFilePath);
+
+    // =============================================================
+    // ||                   初始化库与窗口                         ||
+    // =============================================================
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
     hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -138,122 +151,37 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         return 0;
     }
 
-    // 加载背景图片
+    // =============================================================
+    // ||                    绘制背景图片                          ||
+    // =============================================================
+
+    // todo 改一改钩子回调，用来实现图片切换
+
     wchar_t *imgPath = new wchar_t[MAX_PATH]{};
     wchar_t *exePath = new wchar_t[MAX_PATH]{};
     GetExeDirectory(exePath, MAX_PATH);
-    swprintf_s(imgPath, MAX_PATH, L"%ls\\%ls\\background.png", exePath, audioLibPath);
+    swprintf_s(imgPath, MAX_PATH, L"%ls\\%ls\\imgs", exePath, audioLibPath);
     delete[] exePath;
-    Gdiplus::Bitmap *pBitmap;
-    if (FileExists(imgPath))
+
+    try
     {
-        pBitmap = Gdiplus::Bitmap::FromFile(imgPath);
-        if (!pBitmap || pBitmap->GetLastStatus() != Gdiplus::GpStatus::Ok)
-        {
-            // 图片加载失败，创建红色矩形作为替代
-            pBitmap = new Gdiplus::Bitmap(160, 180);
-            Gdiplus::Graphics g(pBitmap);
-            Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 0, 0));
-            g.FillRectangle(&brush, 0, 0, 160, 180);
-        }
+        bg_ptr = new keybonk::background(hwnd, imgPath, nCmdShow);
     }
-    else
+    catch (const keybonk::exception &e)
     {
-        debug::logOutput(L"[初始化]找不到背景图片\n    - 路径：", imgPath,
-                         L"\n    - 建议：检查文件夹完整性，确保背景图片存在于指定位置", L"\n");
+        debug::logOutput(L"[初始化]背景图片加载异常\n    - 错误类型：");
         MessageBoxExW(
-            NULL, L"错误：00004，当前声音库找不到背景图片，请检查文件夹完整性",
-            L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
-        delete[] imgPath;
-        releaseGlobalResources();
-        return 0;
-    }
-    delete[] imgPath;
-
-    // 获取原始位图尺寸
-    const int originalWidth = pBitmap->GetWidth();
-    const int originalHeight = pBitmap->GetHeight();
-
-    // 获取屏幕尺寸
-    const int screenWidth = GetSystemMetrics(SM_CXSCREEN);
-    const int screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
-    // 判断尺寸是否合法，避免后续计算出问题
-    if (!(originalWidth > 0 && originalHeight > 0) || !(screenWidth > 0 && screenHeight > 0))
-    {
-        debug::logOutput(L"[初始化]错误的屏幕尺寸或图片尺寸\n    - 图片尺寸：", std::to_wstring(originalWidth).c_str(), L"x", std::to_wstring(originalHeight).c_str(),
-                         L"\n    - 屏幕尺寸：", std::to_wstring(screenWidth).c_str(), L"x", std::to_wstring(screenHeight).c_str(), L"\n");
-        MessageBoxExW(
-            NULL, L"错误：00006，获取到错误的屏幕尺寸或图片尺寸，请检查系统设置和图片文件是否正常",
+            NULL, L"错误：00004，背景图片加载异常，请检查相关文件是否存在",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         releaseGlobalResources();
         return 0;
     }
 
-    const bool notPortrait = screenHeight <= screenWidth; // 判断是否竖屏
+    bg_ptr->resetToDefault();
 
-    // 计算最大允许尺寸
-    const int maxWidth = screenWidth / (notPortrait ? 4 : 2);   // 屏幕宽的四分之一
-    const int maxHeight = screenHeight / (notPortrait ? 2 : 4); // 屏幕高的二分之一
-
-    // 计算缩放比例
-    float widthRatio = (float)originalWidth / maxWidth;
-    float heightRatio = (float)originalHeight / maxHeight;
-    float scaleRatio = std::max(widthRatio, heightRatio);
-
-    // 计算缩放后的尺寸
-    int scaledWidth, scaledHeight;
-    if (scaleRatio > 1.0f)
-    {
-        // 需要缩放
-        scaledWidth = (int)(originalWidth / scaleRatio);
-        scaledHeight = (int)(originalHeight / scaleRatio);
-    }
-    else
-    {
-        // 不需要缩放
-        scaledWidth = originalWidth;
-        scaledHeight = originalHeight;
-    }
-
-    // 创建缩放后的位图
-    Gdiplus::Bitmap *scaledBitmap = new Gdiplus::Bitmap(scaledWidth, scaledHeight);
-    Gdiplus::Graphics graphics(scaledBitmap);
-
-    // 设置高质量缩放
-    graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
-    graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
-
-    // 绘制缩放后的图像
-    graphics.DrawImage(pBitmap, 0, 0, scaledWidth, scaledHeight);
-
-    // 清理原始位图
-    delete pBitmap;
-    pBitmap = scaledBitmap; // 使用缩放后的位图
-
-    //--------------------------------------------------------
-
-    // 将GDI+位图转换为HBITMAP
-    pBitmap->Gdiplus::Bitmap::GetHBITMAP(
-        Gdiplus::Color(0, 0, 0, 0),
-        &hBmp); // 透明背景
-
-    delete pBitmap;
-
-    // 创建内存DC
-    hdcScreen = GetDC(hwnd);
-    memDC = CreateCompatibleDC(hdcScreen);
-    hOldBmp = (HBITMAP)SelectObject(memDC, hBmp);
-
-    // 使用UpdateLayeredWindow
-    SIZE size = {scaledWidth, scaledHeight};
-    POINT ptSrc = {0, 0};
-    BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-    UpdateLayeredWindow(hwnd, hdcScreen, NULL, &size, memDC, &ptSrc, 0, &bf, ULW_ALPHA);
-
-    ShowWindow(hwnd, nCmdShow);
-    UpdateWindow(hwnd);
+    // =============================================================
+    // ||                      钩子安装                            ||
+    // =============================================================
 
     // 安装键盘钩子
     KeyboardHook = SetWindowsHookExW(
@@ -292,7 +220,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         return 0;
     }
 
-    // 消息循环
+    // =============================================================
+    // ||                      消息循环                            ||
+    // =============================================================
+
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
