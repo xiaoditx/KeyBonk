@@ -26,13 +26,16 @@ namespace keybonk
 
     public:
         // 构造函数
-        background() : hwnd_(NULL), img_path_(nullptr), pBitmap_(nullptr), hBmp_(NULL), nCmdShow_(SW_HIDE) {};
-        background(HWND hwnd, const wchar_t *img_path, int nCmdShow)
+        explicit background() : hwnd_(NULL), img_path_(nullptr), pBitmap_(nullptr), hBmp_(NULL), nCmdShow_(SW_HIDE) {};
+        explicit background(HWND hwnd, const wchar_t *img_path, int nCmdShow)
             : hwnd_(hwnd), img_path_(img_path),
               pBitmap_(nullptr), hBmp_(NULL), nCmdShow_(nCmdShow)
         {
             resetToDefault();
         };
+
+        background(const background &) = delete;
+        background &operator=(const background &) = delete;
 
         void resetImgPath(const wchar_t *newPath)
         {
@@ -40,9 +43,29 @@ namespace keybonk
         }
         void resetBackground(DWORD keyCode, bool isMouse);
         void resetToDefault();
-        ~background();
+        ~background()
+        {
+            // 清理DC和位图
+            if (memDC_ != nullptr && hOldBmp_ != nullptr)
+            {
+                SelectObject(memDC_, hOldBmp_); // 选出自定义位图
+                DeleteDC(memDC_);
+            }
+            if (hdcScreen_ != nullptr)
+            {
+                ReleaseDC(hwnd_, hdcScreen_);
+            }
+            if (hBmp_ != nullptr)
+            {
+                DeleteObject(hBmp_);
+            }
+            // 保险起见 ↓
+            if (pBitmap_ != nullptr)
+            {
+                delete pBitmap_;
+            }
+        }
     };
-
 
 }
 

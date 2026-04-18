@@ -11,10 +11,10 @@ void PlayAudioFile(const wchar_t *fileName)
     wchar_t audioPath[MAX_PATH]{};
     swprintf_s(audioPath,
                MAX_PATH,
-               L"%ls\\audios\\%ls.wav", // 格式串
-               audioLibPath,            // 音频库位置
-               fileName);               // 文件名
-    wchar_t *fullPath = new wchar_t[MAX_PATH]{};
+               L"%ls\\audios\\%ls.wav",      // 格式串
+               keybonk::global.audioLibPath, // 音频库位置
+               fileName);
+    wchar_t *fullPath = new wchar_t[MAX_PATH]{};                   // 文件名
     GetExeRelativePath(audioPath, fullPath, MAX_PATH);
 
     if (FileExists(fullPath))

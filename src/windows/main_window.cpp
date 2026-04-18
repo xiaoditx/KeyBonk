@@ -22,14 +22,15 @@
 // 显示菜单
 void showMenu()
 {
-    HMENU hMenu = LoadMenu(C_hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
+    using keybonk::global;
+    HMENU hMenu = LoadMenu(global.hInstance, MAKEINTRESOURCE(IDR_CONTEXT_MENU));
     HMENU hSubMenu = GetSubMenu(hMenu, 0);
 
     // 设置菜单项的初始选中状态
-    UINT uWindowPenetrateState = WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
-    UINT uMuteState = Mute ? MF_CHECKED : MF_UNCHECKED;
-    UINT uMuteMouseState = MuteMouse ? MF_CHECKED : MF_UNCHECKED;
-    UINT uMinimumState = minimum ? MF_CHECKED : MF_UNCHECKED;
+    UINT uWindowPenetrateState = global.WindowPenetrate ? MF_CHECKED : MF_UNCHECKED;
+    UINT uMuteState = global.Mute ? MF_CHECKED : MF_UNCHECKED;
+    UINT uMuteMouseState = global.MuteMouse ? MF_CHECKED : MF_UNCHECKED;
+    UINT uMinimumState = global.minimum ? MF_CHECKED : MF_UNCHECKED;
 
     CheckMenuItem(hSubMenu, IDM_WINDOW_PENETRATE,
                   MF_BYCOMMAND | uWindowPenetrateState);
@@ -44,14 +45,14 @@ void showMenu()
     GetCursorPos(&pt); // 获取当前鼠标的屏幕坐标
 
     // 确保窗口在前台，这样点击其他地方时会正确关闭菜单
-    SetForegroundWindow(hwnd);
+    SetForegroundWindow(global.hwnd);
 
     // 显示右键菜单
     TrackPopupMenu(hSubMenu,
                    TPM_RIGHTBUTTON | TPM_LEFTALIGN,
-                   pt.x, pt.y, 0, hwnd, NULL);
+                   pt.x, pt.y, 0, global.hwnd, NULL);
 
-    PostMessage(hwnd, WM_NULL, 0, 0);
+    PostMessage(global.hwnd, WM_NULL, 0, 0);
 
     DestroyMenu(hMenu);
 }
@@ -77,7 +78,8 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
     }
 
     SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
-    UpdateLayeredWindow(hwnd, NULL, NULL, NULL, NULL, NULL, 0, &bf, ULW_ALPHA);
+    // todo : check
+    UpdateLayeredWindow(hWnd, NULL, NULL, NULL, NULL, NULL, 0, &bf, ULW_ALPHA);
 
     // 刷新窗口
     SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
@@ -89,6 +91,8 @@ bool SetWindowMouseTransparent(HWND hWnd, bool enable)
 // 主窗口消息处理
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    using keybonk::global;
+
     switch (uMsg)
     {
     case WM_CLOSE:
@@ -99,8 +103,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             {
                 std::wstring x = std::to_wstring(rect.left);
                 std::wstring y = std::to_wstring(rect.top);
-                WritePrivateProfileString(L"record", L"win-x", x.c_str(), fullIniFilePath);
-                WritePrivateProfileString(L"record", L"win-y", y.c_str(), fullIniFilePath);
+                WritePrivateProfileString(L"record", L"win-x", x.c_str(), global.fullIniFilePath);
+                WritePrivateProfileString(L"record", L"win-y", y.c_str(), global.fullIniFilePath);
             }
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
         }
@@ -109,15 +113,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         RemoveTrayIcon();
         // 记录静音状态
-        WritePrivateProfileString(L"record", L"mute", std::to_wstring(Mute).c_str(), fullIniFilePath);
-        WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(MuteMouse).c_str(), fullIniFilePath);
+        WritePrivateProfileString(L"record", L"mute", std::to_wstring(global.Mute).c_str(), global.fullIniFilePath);
+        WritePrivateProfileString(L"record", L"mute-m", std::to_wstring(global.MuteMouse).c_str(), global.fullIniFilePath);
         // 退出
         PostQuitMessage(0);
         return 0;
 
     case WM_WINDOW_HAS_CREAT:
     {
-        minimum = false;              // 将窗口最小化状态设置为假
+        global.minimum = false;       // 将窗口最小化状态设置为假
         ShowWindow(hwnd, SW_RESTORE); // 恢复窗口
         // 下面这些主要是为了防止特殊情况：
         SetForegroundWindow(hwnd); // 将窗口带到前台
@@ -153,21 +157,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case IDM_WINDOW_PENETRATE: // 菜单-窗口穿透
-            WindowPenetrate = (!WindowPenetrate);
-            SetWindowMouseTransparent(hwnd, WindowPenetrate);
+            global.WindowPenetrate = (!global.WindowPenetrate);
+            SetWindowMouseTransparent(hwnd, global.WindowPenetrate);
             break;
         case IDM_MUTE: // 菜单-静音
-            Mute = (!Mute);
+            global.Mute = (!global.Mute);
             break;
         case IDM_MUTE_MOUSE: // 菜单-静音
-            MuteMouse = (!MuteMouse);
+            global.MuteMouse = (!global.MuteMouse);
             break;
         case IDM_EXIT: // 菜单-退出
             PostMessage(hwnd, WM_CLOSE, 0, 0);
             break;
-        case IDM_MINIMUM:       // 菜单-最小化
-            minimum = !minimum; // 将窗口最小化状态取反
-            if (minimum)
+        case IDM_MINIMUM:                     // 菜单-最小化
+            global.minimum = !global.minimum; // 将窗口最小化状态取反
+            if (global.minimum)
             {
                 ShowWindow(hwnd, SW_HIDE); // 隐藏窗口
             }
@@ -214,26 +218,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 // 添加托盘图标函数
 BOOL AddTrayIcon(HWND hWnd)
 {
+    using keybonk::global;
+
     // 从资源加载图标
     HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_MY_ICON));
     if (!hIcon)
         return FALSE;
 
-    nid.cbSize = sizeof(NOTIFYICONDATA);
-    nid.hWnd = hWnd;
-    nid.uID = IDI_MY_ICON;
-    nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-    nid.uCallbackMessage = (WM_USER + 1);
-    nid.hIcon = hIcon;
+    global.nid.cbSize = sizeof(NOTIFYICONDATA);
+    global.nid.hWnd = hWnd;
+    global.nid.uID = IDI_MY_ICON;
+    global.nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+    global.nid.uCallbackMessage = (WM_USER + 1);
+    global.nid.hIcon = hIcon;
 
     // 设置提示文本
-    lstrcpy(nid.szTip, TEXT("KeyBonk"));
+    lstrcpy(global.nid.szTip, TEXT("KeyBonk"));
 
-    return Shell_NotifyIcon(NIM_ADD, &nid);
+    return Shell_NotifyIcon(NIM_ADD, &global.nid);
 }
 
 // 删除托盘图标函数
 void RemoveTrayIcon()
 {
-    Shell_NotifyIcon(NIM_DELETE, &nid);
+    Shell_NotifyIcon(NIM_DELETE, &keybonk::global.nid);
 }

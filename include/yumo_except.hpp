@@ -34,6 +34,8 @@ namespace keybonk
     public:
         exception() = delete;
         exception(type t) : type_(t) {}
+        type getType() const { return type_; }
+        ~exception() = default;
     };
 
     /**

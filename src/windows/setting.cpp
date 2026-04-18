@@ -17,22 +17,23 @@
 // 打开“设置”窗口
 void settingWindowOpen()
 {
+	using keybonk::global;
 	// 检查设置窗口是否已经存在（窗口只能存在一次）
-	if (hwndSetting != NULL && IsWindow(hwndSetting))
+	if (global.hwndSetting != NULL && IsWindow(global.hwndSetting))
 	{
 		// 检查窗口是否被最小化或隐藏
-		if (IsIconic(hwndSetting))
+		if (IsIconic(global.hwndSetting))
 		{
 			// 恢复窗口
-			ShowWindow(hwndSetting, SW_RESTORE);
+			ShowWindow(global.hwndSetting, SW_RESTORE);
 		}
-		else if (!IsWindowVisible(hwndSetting))
+		else if (!IsWindowVisible(global.hwndSetting))
 		{
 			// 显示窗口
-			ShowWindow(hwndSetting, SW_SHOW);
+			ShowWindow(global.hwndSetting, SW_SHOW);
 		}
 		// 激活窗口并设置为前台
-		SetForegroundWindow(hwndSetting);
+		SetForegroundWindow(global.hwndSetting);
 		return;
 	}
 
@@ -41,28 +42,28 @@ void settingWindowOpen()
 	WNDCLASSEX wc = {};					 // 用0初始化整个WindowClass
 	wc.cbSize = sizeof(WNDCLASSEX);		 // 设置结构体大小
 	wc.lpfnWndProc = WindowProc_setting; // 指定WindowProc_about函数
-	wc.hInstance = C_hInstance;
+	wc.hInstance = global.hInstance;
 	wc.lpszClassName = CLASS_NAME; // 窗口类名称
-	wc.hIcon = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
-	wc.hIconSm = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
+	wc.hIcon = (HICON)LoadImage(global.hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
+	wc.hIconSm = (HICON)LoadImage(global.hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	RegisterClassEx(&wc); // 注册
 
-	hwndSetting = CreateWindowExW(
+	global.hwndSetting = CreateWindowExW(
 		WS_EX_APPWINDOW, CLASS_NAME, L"设置",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 600, 400,
-		NULL, NULL, C_hInstance, NULL);
+		NULL, NULL, global.hInstance, NULL);
 
 	// 创建失败则提示并返回，结束运行
-	if (hwndSetting == NULL)
+	if (global.hwndSetting == NULL)
 	{
 		MessageBoxExW(
 			NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
 			L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
 	}
-	ShowWindow(hwndSetting, C_nCmdShow);
-	// UpdateWindow(hwndAbout);
+	ShowWindow(global.hwndSetting, SW_SHOW);
+	// UpdateWindow(global.hwndAbout);
 }
 
 #define IDC_LABEL1 1008
@@ -70,6 +71,7 @@ void settingWindowOpen()
 // 设置窗口消息处理
 LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	using keybonk::global;
 	switch (uMsg)
 	{
 	case WM_CREATE: // 绘制图形界面
@@ -85,7 +87,7 @@ LRESULT CALLBACK WindowProc_setting(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
 		CreateWindowExW(0, L"STATIC", L"选择的音频库：",
 						WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
 						130, 20, clientWidth - 150, 30,
-						hwnd, (HMENU)IDC_LABEL1, C_hInstance, NULL);
+						hwnd, (HMENU)IDC_LABEL1, global.hInstance, NULL);
 
 		// 设置字体（微软雅黑，24号）
 		// 字体变量

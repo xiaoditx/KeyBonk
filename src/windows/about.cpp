@@ -18,22 +18,24 @@
 // 打开“关于”窗口
 void aboutWindowOpen()
 {
+    using keybonk::global;
+
     // 检查关于窗口是否已经存在（窗口只能存在一次）
-    if (hwndAbout != NULL && IsWindow(hwndAbout))
+    if (global.hwndAbout != NULL && IsWindow(global.hwndAbout))
     {
         // 检查窗口是否被最小化或隐藏
-        if (IsIconic(hwndAbout))
+        if (IsIconic(global.hwndAbout))
         {
             // 恢复窗口
-            ShowWindow(hwndAbout, SW_RESTORE);
+            ShowWindow(global.hwndAbout, SW_RESTORE);
         }
-        else if (!IsWindowVisible(hwndAbout))
+        else if (!IsWindowVisible(global.hwndAbout))
         {
             // 显示窗口
-            ShowWindow(hwndAbout, SW_SHOW);
+            ShowWindow(global.hwndAbout, SW_SHOW);
         }
         // 激活窗口并设置为前台
-        SetForegroundWindow(hwndAbout);
+        SetForegroundWindow(global.hwndAbout);
         return;
     }
 
@@ -42,28 +44,28 @@ void aboutWindowOpen()
     WNDCLASSEX wc = {};                // 用0初始化整个WindowClass
     wc.cbSize = sizeof(WNDCLASSEX);    // 设置结构体大小
     wc.lpfnWndProc = WindowProc_about; // 指定WindowProc_about函数
-    wc.hInstance = C_hInstance;
+    wc.hInstance = global.hInstance;
     wc.lpszClassName = CLASS_NAME; // 窗口类名称
-    wc.hIcon = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
-    wc.hIconSm = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
+    wc.hIcon = (HICON)LoadImage(global.hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
+    wc.hIconSm = (HICON)LoadImage(global.hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     RegisterClassEx(&wc); // 注册
 
-    hwndAbout = CreateWindowExW(
+    global.hwndAbout = CreateWindowExW(
         WS_EX_APPWINDOW, CLASS_NAME, L"关于 KeyBonk",
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, CW_USEDEFAULT, CW_USEDEFAULT, 600, 400,
-        NULL, NULL, C_hInstance, NULL);
+        NULL, NULL, global.hInstance, NULL);
 
     // 创建失败则提示并返回，结束运行
-    if (hwndAbout == NULL)
+    if (global.hwndAbout == NULL)
     {
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
     }
-    ShowWindow(hwndAbout, C_nCmdShow);
-    UpdateWindow(hwndAbout);
+    ShowWindow(global.hwndAbout, global.nCmdShow);
+    UpdateWindow(global.hwndAbout);
 }
 
 // “关于”窗口使用：控件ID定义
@@ -79,6 +81,8 @@ void aboutWindowOpen()
 // 关于窗口消息处理
 LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    using keybonk::global;
+
     switch (uMsg)
     {
     // 窗口创建完毕，绘制组件
@@ -95,7 +99,7 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             0, L"STATIC", L"",
             WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_CENTERIMAGE,
             20, 20, 96, 96,
-            hwnd, (HMENU)IDC_LOGO, C_hInstance, NULL);
+            hwnd, (HMENU)IDC_LOGO, global.hInstance, NULL);
 
         // 使用GDI+加载PNG图片作为Logo
         Gdiplus::Image *pLogoImage = Gdiplus::Image::FromFile(L"./resource/icon-org.png");
@@ -128,19 +132,19 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
         CreateWindowExW(0, L"STATIC", L"KeyBonk",
                         WS_CHILD | WS_VISIBLE | SS_CENTER | SS_NOPREFIX,
                         130, 20, clientWidth - 150, 30,
-                        hwnd, (HMENU)IDC_SOFTWARE_NAME, C_hInstance, NULL);
+                        hwnd, (HMENU)IDC_SOFTWARE_NAME, global.hInstance, NULL);
 
         // 创建软件版本文本
         CreateWindowExW(0, L"STATIC", L"版本: v" w_appVersion,
                         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
                         130, 60, clientWidth - 150, 20,
-                        hwnd, (HMENU)IDC_VERSION, C_hInstance, NULL);
+                        hwnd, (HMENU)IDC_VERSION, global.hInstance, NULL);
 
         // 创建软件作者文本
         CreateWindowExW(0, L"STATIC", L"作者: 小狄同学呀",
                         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
                         130, 90, clientWidth - 150, 20,
-                        hwnd, (HMENU)IDC_AUTHOR, C_hInstance, NULL);
+                        hwnd, (HMENU)IDC_AUTHOR, global.hInstance, NULL);
 
         // 创建软件介绍文本
         CreateWindowExW(0, L"STATIC",
@@ -149,19 +153,19 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         L"    当前版本的变化：" versionChange,
                         WS_CHILD | WS_VISIBLE | SS_LEFT | SS_NOPREFIX,
                         20, 130, clientWidth - 40, 120, // 增加高度以容纳更多内容
-                        hwnd, (HMENU)IDC_DESCRIPTION, C_hInstance, NULL);
+                        hwnd, (HMENU)IDC_DESCRIPTION, global.hInstance, NULL);
 
         // 创建个人网站链接
         CreateWindowExW(WS_EX_TRANSPARENT, L"STATIC", L"访问我的网站: https://xiaoditx.github.io/",
                         WS_CHILD | WS_VISIBLE | SS_CENTER | SS_NOTIFY | SS_NOPREFIX,
                         20, 270, clientWidth - 40, 30, // 向下移动位置
-                        hwnd, (HMENU)IDC_WEBSITE_LINK, C_hInstance, NULL);
+                        hwnd, (HMENU)IDC_WEBSITE_LINK, global.hInstance, NULL);
 
         // 创建关闭按钮
         CreateWindowExW(0, L"BUTTON", L"关闭",
                         WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
                         clientWidth - 100, clientHeight - 50, 80, 30,
-                        hwnd, (HMENU)IDC_CLOSE_BUTTON, C_hInstance, NULL);
+                        hwnd, (HMENU)IDC_CLOSE_BUTTON, global.hInstance, NULL);
 
         // 设置文本控件的字体
         // 软件名的字体设置
@@ -214,7 +218,7 @@ LRESULT CALLBACK WindowProc_about(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
     }
 
     case WM_DESTROY:
-        DestroyWindow(hwndAbout);
+        DestroyWindow(global.hwndAbout);
         return 0;
 
     case WM_PAINT:

@@ -20,7 +20,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         KBDLLHOOKSTRUCT *keyInfo = (KBDLLHOOKSTRUCT *)lParam;
         // 判断是否为按键按下事件
-        if ((wParam == WM_KEYDOWN /*|| wParam == WM_SYSKEYDOWN*/) and not Mute)
+        if ((wParam == WM_KEYDOWN /*|| wParam == WM_SYSKEYDOWN*/) and not keybonk::global.Mute)
         {
             DWORD vkCode = keyInfo->vkCode;
             wchar_t fileName[10]{};

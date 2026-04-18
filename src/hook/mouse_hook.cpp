@@ -6,7 +6,7 @@
 // 低级鼠标钩子的回调函数
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if ((wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) and not MuteMouse)
+    if ((wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) and not keybonk::global.MuteMouse)
     {
         // 临时版本，文件写死在代码里
         const wchar_t *audioList[] = {L"74", L"77", L"78", L"84"};

@@ -6,38 +6,41 @@
 
 #include <windows.h>
 #include <gdiplus.h>
+#include <optional>
+#include "functions/background.hpp"
 
-namespace keybonk {
-    class background; // 前向声明
+namespace keybonk
+{
+    struct resource_manager
+    {
+    public:
+        // 全局变量定义
+        ULONG_PTR gdiplusToken = 0;           // GDI+的token
+        bool comInitialized = false;          // COM库是否初始化成功
+        wchar_t *fullIniFilePath = nullptr;   // 配置文件完整路径
+        wchar_t *fullDebugFilePath = nullptr; // 日志文件完整路径
+        HWND hwnd = NULL;                     // 主窗口句柄
+        HWND hwndAbout = NULL;                // "关于"窗口句柄
+        HWND hwndSetting = NULL;              // “设置”窗口句柄
+        bool Mute = false;                    // 键盘是否静音
+        bool MuteMouse = false;               // 鼠标是否静音
+        bool WindowPenetrate = false;         // 窗口穿透
+        NOTIFYICONDATA nid = {};              // 任务栏通知区域图标状态
+        wchar_t audioLibPath[MAX_PATH];       // 音频库位置
+        bool minimum = false;
+        HINSTANCE hInstance;
+        HHOOK KeyboardHook = nullptr; // 钩子句柄
+        HHOOK MouseHook = nullptr;    // 钩子句柄
+        HBITMAP hBmp = nullptr;       // 存储背景图片的位图
+        HDC hdcScreen = nullptr;      // 主窗口屏幕DC
+        HDC memDC = nullptr;          // 主窗口内存DC
+        HBITMAP hOldBmp = nullptr;    // 主窗口内存DC默认位图
+        int nCmdShow;
+        HRESULT hrMain;                            // 接受Windows函数的返回结果
+        std::optional<keybonk::background> bg_opt; // 背景对象，在main初始化
+        // 全局资源释放
+        ~resource_manager();
+    };
+    inline resource_manager global;
 }
-
-// 全局变量声明
-extern ULONG_PTR g_gdiplusToken;       // GDI+的token
-extern bool comInitialized;            // COM库是否初始化成功
-extern wchar_t *fullIniFilePath;       // 配置文件完整路径
-extern wchar_t *fullDebugFilePath;     // 日志文件完整路径
-extern HWND hwnd;                      // 主窗口句柄
-extern HWND hwndAbout;                 // "关于"窗口句柄
-extern HWND hwndSetting;               // “设置”窗口句柄
-extern bool Mute;                      // 键盘是否静音
-extern bool MuteMouse;                 // 鼠标是否静音
-extern bool WindowPenetrate;           // 窗口穿透
-extern NOTIFYICONDATA nid;             // 任务栏通知区域图标状态
-extern bool minimum;                   // 当前最小化状态
-extern wchar_t audioLibPath[MAX_PATH]; // 音频库位置
-extern HHOOK KeyboardHook;             // 钩子句柄
-extern HHOOK MouseHook;                // 钩子句柄
-extern HBITMAP hBmp;                   // 存储背景图片的位图
-extern HDC hdcScreen;                  // 主窗口屏幕DC
-extern HDC memDC;                      // 主窗口内存DC
-extern HBITMAP hOldBmp;                // 主窗口内存DC默认位图
-extern HINSTANCE C_hInstance;
-extern int C_nCmdShow;
-extern HRESULT hrMain;              // 接受Windows函数的返回结果
-extern keybonk::background *bg_ptr; // 背景对象
-
-/**
- * @brief 统一释放需要释放的全局资源
- */
-void releaseGlobalResources();
 #endif // GLOBAL_H

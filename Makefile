@@ -21,8 +21,8 @@ WINDRES_FLAG = -F pe-x86-64 -o
 endif
 
 # 基本变量 
-CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2
-LDFLAGS  = -mwindows -municode
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2 -DUNICODE -D_WIN32_WINNT=0x0601
+LDFLAGS  = -mwindows -municode -std=c++17
 LDLIBS   = -luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
 
 # 目录变量

@@ -2,8 +2,6 @@
 
 namespace keybonk
 {
-    // todo 某些函数应该是内联的
-
     void background::resetBackground(DWORD keyCode, bool isMouse)
     {
         auto tmp_path = std::make_unique<wchar_t[]>(MAX_PATH);
@@ -129,28 +127,5 @@ namespace keybonk
                    img_path_);
         this->loadImg_(tmp_path.get());
         this->setImgSize_();
-    }
-
-    background::~background()
-    {
-        // 清理DC和位图
-        if (memDC_ != nullptr && hOldBmp_ != nullptr)
-        {
-            SelectObject(memDC_, hOldBmp_); // 选出自定义位图
-            DeleteDC(memDC_);
-        }
-        if (hdcScreen_ != nullptr)
-        {
-            ReleaseDC(hwnd_, hdcScreen_);
-        }
-        if (hBmp_ != nullptr)
-        {
-            DeleteObject(hBmp_);
-        }
-        // 保险起见 ↓
-        if (pBitmap_ != nullptr)
-        {
-            delete pBitmap_;
-        }
     }
 }

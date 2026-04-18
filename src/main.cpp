@@ -41,8 +41,9 @@ BOOL IsInstanceAlreadyRunning(LPCTSTR windowClass, LPCTSTR windowTitle)
 // 主程序
 int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, [[maybe_unused]] PWSTR pCmdLine, int nCmdShow)
 {
-    fullDebugFilePath = new wchar_t[MAX_PATH]{};
-    GetExeRelativePath(L"./log.txt", fullDebugFilePath, MAX_PATH);
+    using keybonk::global;
+    global.fullDebugFilePath = new wchar_t[MAX_PATH]{};
+    GetExeRelativePath(L"./log.txt", global.fullDebugFilePath, MAX_PATH);
 
     // =============================================================
     // ||                    重复启动检测                          ||
@@ -66,39 +67,39 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     debug::logProgramStartTime();
 
     // 保存一些参数到全局
-    C_hInstance = hInstance;
-    C_nCmdShow = nCmdShow;
+    global.hInstance = hInstance;
+    global.nCmdShow = nCmdShow;
 
     // 读取配置项文件中的record（上次退出时记录）部分
     // 格式化出ini文件的完整路径
-    fullIniFilePath = new wchar_t[MAX_PATH]{};
-    GetExeRelativePath(L"./config.ini", fullIniFilePath, MAX_PATH);
+    global.fullIniFilePath = new wchar_t[MAX_PATH]{};
+    GetExeRelativePath(L"./config.ini", global.fullIniFilePath, MAX_PATH);
     // win-x和win-y 上次退出时的窗口位置
-    int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, fullIniFilePath);
-    int windowPositionY = GetPrivateProfileInt(L"record", L"win-y", 100, fullIniFilePath);
+    int windowPositionX = GetPrivateProfileInt(L"record", L"win-x", 100, global.fullIniFilePath);
+    int windowPositionY = GetPrivateProfileInt(L"record", L"win-y", 100, global.fullIniFilePath);
     // 把上次退出记录的静音情况读到Mute和MuteMouse里
-    Mute = bool(GetPrivateProfileInt(L"record", L"mute", 0, fullIniFilePath));
-    MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, fullIniFilePath));
+    global.Mute = bool(GetPrivateProfileInt(L"record", L"mute", 0, global.fullIniFilePath));
+    global.MuteMouse = bool(GetPrivateProfileInt(L"record", L"mute-m", 0, global.fullIniFilePath));
 
     // 读取设置信息
-    GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", audioLibPath, MAX_PATH, fullIniFilePath);
+    GetPrivateProfileString(L"settings", L"lib", L".\\bin\\default", global.audioLibPath, MAX_PATH, global.fullIniFilePath);
 
     // =============================================================
     // ||                   初始化库与窗口                         ||
     // =============================================================
 
     // 初始化COM库（其实这是一个很久的未来才会有的功能要用的初始化，只是提前写了）
-    hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    global.hrMain = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 
-    if (FAILED(hrMain))
+    if (FAILED(global.hrMain))
     {
-        debug::logOutput(L"[初始化]初始化COM库异常\n    - HRESULT：", std::to_wstring(hrMain).c_str(), L"\n");
+        debug::logOutput(L"[初始化]初始化COM库异常\n    - HRESULT：", std::to_wstring(global.hrMain).c_str(), L"\n");
         MessageBoxExW(
             NULL, L"错误：00001，初始化COM库时发生异常，请检查系统相关文件是否完好",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         return 0;
     }
-    comInitialized = true;
+    global.comInitialized = true;
 
     // 注册窗口类
     const wchar_t CLASS_NAME[] = L"KeyBonk主窗口";
@@ -107,12 +108,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     wc.lpfnWndProc = WindowProc;    // 指定WindowProc函数
     wc.hInstance = hInstance;
     wc.lpszClassName = CLASS_NAME; // 窗口类名称
-    wc.hIcon = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
-    wc.hIconSm = (HICON)LoadImage(C_hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
-    RegisterClassEx(&wc);                                                                            // 注册
+    wc.hIcon = (HICON)LoadImage(global.hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0);
+    wc.hIconSm = (HICON)LoadImage(global.hInstance, MAKEINTRESOURCE(IDI_MY_ICON), IMAGE_ICON, 64, 64, 0); // 小图标（窗口标题栏）
+    RegisterClassEx(&wc);                                                                                 // 注册
 
     // 创建窗口
-    hwnd = CreateWindowExW(
+    global.hwnd = CreateWindowExW(
         WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TOOLWINDOW, // 支持透明，设置置顶，隐藏软件图标
         CLASS_NAME,                                       // 窗口类
         L"KeyBonk主窗口",                                 // 窗口文本
@@ -126,28 +127,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     );
 
     // 创建失败则提示并返回，结束运行
-    if (hwnd == NULL)
+    if (global.hwnd == NULL)
     {
         debug::logOutput(L"[初始化]主窗口创建异常\n");
         debug::logWinError(GetLastError());
         MessageBoxExW(
             NULL, L"错误：00002，创建窗口时发生异常，请检查系统各项设置是否正常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
-        releaseGlobalResources();
         return 0;
     }
 
     // 初始化GDI+
     Gdiplus::GpStatus GDIpStatus; // 接收GDI+库的状态（错误码）
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    GDIpStatus = Gdiplus::GdiplusStartup(&g_gdiplusToken, &gdiplusStartupInput, NULL);
+    GDIpStatus = Gdiplus::GdiplusStartup(&global.gdiplusToken, &gdiplusStartupInput, NULL);
     if (GDIpStatus != Gdiplus::Ok)
     { // 如果存在问题
         debug::logOutput(L"[初始化]GDI+初始化异常\n    - GDI+状态码：", std::to_wstring(GDIpStatus).c_str(), L"\n");
         MessageBoxExW(
             NULL, L"错误：00003，初始化GDI+库时发生异常",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
-        releaseGlobalResources();
         return 0;
     }
 
@@ -160,37 +159,62 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
     wchar_t *imgPath = new wchar_t[MAX_PATH]{};
     wchar_t *exePath = new wchar_t[MAX_PATH]{};
     GetExeDirectory(exePath, MAX_PATH);
-    swprintf_s(imgPath, MAX_PATH, L"%ls\\%ls\\imgs", exePath, audioLibPath);
+    swprintf_s(imgPath, MAX_PATH, L"%ls\\%ls\\imgs", exePath, global.audioLibPath);
     delete[] exePath;
 
     try
     {
-        bg_ptr = new keybonk::background(hwnd, imgPath, nCmdShow);
+        global.bg_opt.emplace(global.hwnd, imgPath, global.nCmdShow);
     }
     catch (const keybonk::exception &e)
     {
-        debug::logOutput(L"[初始化]背景图片加载异常\n    - 错误类型：");
-        MessageBoxExW(
-            NULL, L"错误：00004，背景图片加载异常，请检查相关文件是否存在",
-            L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
-        releaseGlobalResources();
+        typedef keybonk::exception::type eType;
+
+        switch (e.getType())
+        {
+        case eType::FileNotFound:
+        {
+            debug::logOutput(L"[初始化]背景图片文件未找到\n",
+                             L"    - 图片文件夹路径：", imgPath, L"\n");
+            MessageBoxExW(
+                NULL, L"错误：00004，背景图片文件未找到，请检查相关文件是否存在",
+                L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错}
+            break;
+        }
+        case eType::InvalidInput:
+        {
+            debug::logOutput(L"[初始化]背景图片尺寸异常\n",
+                             L"    - 图片文件夹路径：", imgPath, L"\n");
+            MessageBoxExW(
+                NULL, L"错误：00006，背景图片尺寸异常，请检查相关文件是否正确",
+                L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+            break;
+        }
+        default:
+            debug::logOutput(L"[初始化]背景图片加载发生未知错误\n",
+                             L"    - 图片文件夹路径：", imgPath, L"\n");
+            MessageBoxExW(
+                NULL, L"错误：00007，背景图片加载发生未知错误，请检查相关文件是否正确",
+                L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
+            break;
+        }
+        delete[] imgPath;
         return 0;
     }
-
-    bg_ptr->resetToDefault();
+    global.bg_opt->resetToDefault();
 
     // =============================================================
     // ||                      钩子安装                            ||
     // =============================================================
 
     // 安装键盘钩子
-    KeyboardHook = SetWindowsHookExW(
+    global.KeyboardHook = SetWindowsHookExW(
         WH_KEYBOARD_LL, // 低级键盘钩子
         // 似乎也能用WH_KEYBOARD，但低级钩子用起来更稳定、简单些
         LowLevelKeyboardProc, // 传递回调函数地址
         GetModuleHandle(NULL),
         0);
-    if (KeyboardHook == NULL)
+    if (global.KeyboardHook == NULL)
     { // 没拿到句柄则失败
         debug::logOutput(L"[初始化]键盘钩子安装失败\n");
         debug::logWinError(GetLastError());
@@ -198,17 +222,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         // 释放已分配的资源
-        releaseGlobalResources();
         return 0;
     }
 
     // 鼠标钩子
-    MouseHook = SetWindowsHookExW(
+    global.MouseHook = SetWindowsHookExW(
         WH_MOUSE_LL,       // 低级鼠标钩子
         LowLevelMouseProc, // 传递回调函数地址
         GetModuleHandle(NULL),
         0);
-    if (MouseHook == NULL)
+    if (global.MouseHook == NULL)
     { // 没拿到句柄则失败
         debug::logOutput(L"[初始化]鼠标钩子安装失败\n");
         debug::logWinError(GetLastError());
@@ -216,7 +239,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
             NULL, L"错误：00005，钩子安装失败，请检查杀毒软件是否关闭",
             L"KB - 运行时发生错误", MB_OK | MB_ICONEXCLAMATION, 0); // 消息框提示出错
         // 释放已分配的资源
-        releaseGlobalResources();
         return 0;
     }
 
@@ -230,6 +252,5 @@ int WINAPI wWinMain(HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstanc
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    releaseGlobalResources();
     return 0;
 }
