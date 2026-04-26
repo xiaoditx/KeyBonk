@@ -1,13 +1,6 @@
 // ===./src/keyboard_hook.cpp/
 // 键盘钩子相关功能实现
 
-#ifndef UNICODE
-// UNICODE宏可以让Windows函数自动的匹配到W版本
-#define UNICODE
-#endif
-
-#include <windows.h>
-#include <wchar.h>
 #include "debug.hpp"
 #include "hook/keyboard_hook.hpp"
 #include "global.hpp"

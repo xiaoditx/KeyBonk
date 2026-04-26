@@ -1,15 +1,6 @@
 // ===./src/setting.cpp===
 // 设置窗口相关功能实现
 
-#ifndef UNICODE // UNICODE宏可以让Windows函数自动的匹配到W版本
-#define UNICODE
-#endif
-
-#include <windows.h>
-#include <gdiplus.h>
-#include <shellapi.h>
-#include <winver.h>
-#include <string>
 #include "windows/setting.hpp"
 #include "global.hpp"
 #include "resources.hpp"

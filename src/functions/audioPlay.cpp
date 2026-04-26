@@ -1,4 +1,3 @@
-#include <windows.h>
 #include "functions/audioPlay.hpp"
 #include "debug.hpp"
 #include "globalDevelopmentControl.hpp"

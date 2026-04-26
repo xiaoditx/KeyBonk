@@ -1,4 +1,3 @@
-#include "windows.h"
 #include "debug.hpp"
 
 namespace debug

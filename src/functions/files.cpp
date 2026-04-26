@@ -1,6 +1,5 @@
 #include "functions/files.hpp"
 #include <filesystem>
-#include <windows.h>
 
 // 各种文件路径处理函数
 bool GetExePath(wchar_t *outBuffer, size_t bufferSize)

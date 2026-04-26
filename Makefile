@@ -20,10 +20,13 @@ WINDRES  = windres
 WINDRES_FLAG = -F pe-x86-64 -o
 endif
 
-# 基本变量 
+# 基本变量
 CXXFLAGS = -std=c++17 -Wall -Wextra -Wpedantic -O2 -DUNICODE -D_WIN32_WINNT=0x0601
 LDFLAGS  = -mwindows -municode -std=c++17
 LDLIBS   = -luser32 -lgdi32 -lole32 -lgdiplus -lwinmm
+
+# 预编译头文件设置
+PCH_FILE := pch.hpp
 
 # 目录变量
 SRC_DIR   := src
@@ -33,6 +36,10 @@ BUILD_BASE:= build
 BUILD_DIR := $(BUILD_BASE)/$(ARCH)
 OBJ_DIR   := $(BUILD_DIR)/obj
 BIN       := $(BUILD_DIR)/KeyBonk.exe
+
+# 预编译头文件设置（依赖于OBJ_DIR）
+PCH_DIR  := $(OBJ_DIR)
+PCH_OBJ  := $(PCH_DIR)/$(PCH_FILE).gch
 
 # 源文件列表 
 CXX_SRCS := $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/windows/*.cpp) $(wildcard $(SRC_DIR)/hook/*.cpp) $(wildcard $(SRC_DIR)/functions/*.cpp)
@@ -52,11 +59,17 @@ $(BIN): $(CXX_OBJS) $(RES_OBJ) | $(BUILD_DIR)/bin/default
 	@echo 正在链接生成可执行文件 $@ ...
 	@$(CXX) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
-# 编译对象文件 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+# 预编译头文件生成
+$(PCH_OBJ): $(INC_DIR)/$(PCH_FILE) | $(PCH_DIR)
+	@echo 正在生成预编译头文件 $@
+	@if not exist "$(PCH_DIR)" mkdir "$(PCH_DIR)"
+	@$(CXX) $(CXXFLAGS) -I$(INC_DIR) -I$(RES_DIR) -c $(INC_DIR)/$(PCH_FILE) -o $@
+
+# 编译对象文件（使用预编译头）
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR) $(PCH_OBJ)
 	@echo 正在将源码文件 $< 编译到 $@
 	@if not exist "$(dir $@)" mkdir "$(dir $@)"
-	@$(CXX) $(CXXFLAGS) $(DEBUG) -I$(INC_DIR) -I$(RES_DIR)  -MMD -MP -c $< -o $@
+	@$(CXX) $(CXXFLAGS) $(DEBUG) -I$(INC_DIR) -I$(RES_DIR) -include $(PCH_FILE) -MMD -MP -c $< -o $@
 
 # 资源文件 
 $(RES_OBJ): $(RES_SRC) ./include/globalDevelopmentControl.hpp | $(OBJ_DIR)/rc
@@ -95,6 +108,8 @@ $(BUILD_DIR)/bin/default:
 clean:
 	@echo 正在清理build目录 ...
 	@if exist "$(BUILD_BASE)" rmdir /S /Q "$(BUILD_BASE)"
+	@echo 正在清理预编译头文件 ...
+	@if exist "$(OBJ_DIR)\$(PCH_FILE).gch" del /Q "$(OBJ_DIR)\$(PCH_FILE).gch"
 	@echo 清理完成
 
 # 帮助 

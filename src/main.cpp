@@ -2,16 +2,6 @@
 // 主程序存放的文件
 // 包含消息循环，作为入口
 
-#ifndef UNICODE
-// UNICODE宏可以让Windows函数自动的匹配到W版本
-#define UNICODE
-#endif
-
-#include <windows.h>
-#include <gdiplus.h>
-#include <shellapi.h>
-#include <string>
-
 #include "global.hpp"
 #include "debug.hpp"
 #include "window_manager.hpp"
